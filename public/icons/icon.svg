@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="108" fill="#B5651D"/>
+  <text x="256" y="200" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-weight="700" font-size="160" fill="white">L</text>
+  <text x="256" y="340" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-weight="500" font-size="72" fill="rgba(255,255,255,0.85)">Traders</text>
+  <text x="256" y="420" text-anchor="middle" font-family="SF Mono, Menlo, monospace" font-weight="400" font-size="48" fill="rgba(255,255,255,0.6)">&#8377; Price</text>
+</svg>
