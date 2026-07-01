@@ -31,7 +31,7 @@ export function TabBar() {
   );
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 safe-bottom no-print px-4 pb-2">
+    <nav className="fixed inset-x-0 bottom-0 z-50 no-print px-4 pb-2 safe-bottom pwa-tab-bottom">
       <div
         className="mx-auto max-w-lg overflow-hidden rounded-[22px]"
         style={{

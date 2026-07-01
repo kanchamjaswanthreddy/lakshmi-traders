@@ -37,7 +37,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <head>
+        <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+      </head>
+      <body className="min-h-dvh flex flex-col" style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}>{children}</body>
     </html>
   );
 }
