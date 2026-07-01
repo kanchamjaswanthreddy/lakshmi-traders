@@ -60,10 +60,10 @@ export function TabBar() {
                 {isActive && (
                   <motion.div
                     layoutId="tab-pill"
-                    className="absolute inset-0 rounded-2xl bg-gradient-to-r from-[#B5651D]/15 to-[#D4924B]/15"
+                    className="absolute inset-0 rounded-2xl bg-gradient-to-r from-[#1D1D1F]/15 to-[#3A3A3C]/15"
                     transition={TAB_SPRING}
                     style={{
-                      boxShadow: "inset 0 0 0 0.5px rgba(181,101,29,0.2)",
+                      boxShadow: "inset 0 0 0 0.5px rgba(0,0,0,0.2)",
                     }}
                   />
                 )}

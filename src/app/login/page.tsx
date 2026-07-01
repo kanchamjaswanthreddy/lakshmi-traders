@@ -65,7 +65,7 @@ export default function LoginPage() {
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ ...SPRING, delay: 0.1 }}
-                  className="mx-auto mb-5 flex h-[72px] w-[72px] items-center justify-center rounded-[20px] bg-gradient-to-br from-[#B5651D] to-[#D4924B] shadow-lg"
+                  className="mx-auto mb-5 flex h-[72px] w-[72px] items-center justify-center rounded-[20px] bg-gradient-to-br from-[#1D1D1F] to-[#3A3A3C] shadow-lg"
                 >
                   <span className="text-[32px] font-bold leading-none text-white" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
                     L
@@ -166,7 +166,7 @@ export default function LoginPage() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="login-btn-shimmer relative w-full overflow-hidden rounded-2xl bg-gradient-to-r from-[#B5651D] to-[#D4924B] py-3.5 text-[17px] font-semibold text-white transition-transform duration-150 active:scale-[0.97] disabled:opacity-50"
+                    className="login-btn-shimmer relative w-full overflow-hidden rounded-2xl bg-gradient-to-r from-[#1D1D1F] to-[#3A3A3C] py-3.5 text-[17px] font-semibold text-white transition-transform duration-150 active:scale-[0.97] disabled:opacity-50"
                   >
                     {submitting ? "Signing in..." : "Sign In"}
                   </button>

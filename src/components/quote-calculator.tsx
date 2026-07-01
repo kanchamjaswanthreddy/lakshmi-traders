@@ -129,7 +129,7 @@ export function QuoteCalculator({ categories, products }: QuoteCalculatorProps) 
       >
         {/* Discount input card */}
         <div className="ios-group card-glow flex items-center gap-4 rounded-[20px] px-5 py-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] bg-gradient-to-br from-[#B5651D] to-[#D4924B]">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] bg-gradient-to-br from-[#1D1D1F] to-[#3A3A3C]">
             <Percent size={22} className="text-white" strokeWidth={2} />
           </div>
           <div className="flex-1 min-w-0">

@@ -440,7 +440,7 @@ export function ManageCategories({ initialCategories }: ManageCategoriesProps) {
                   <button
                     onClick={handleAddCategory}
                     disabled={!newName.trim() || saving}
-                    className="w-full rounded-2xl bg-gradient-to-r from-[#B5651D] to-[#D4924B] py-3.5 text-[17px] font-semibold text-white transition-transform duration-150 active:scale-[0.97] disabled:opacity-50"
+                    className="w-full rounded-2xl bg-gradient-to-r from-[#1D1D1F] to-[#3A3A3C] py-3.5 text-[17px] font-semibold text-white transition-transform duration-150 active:scale-[0.97] disabled:opacity-50"
                   >
                     {saving ? "Adding..." : "Add Category"}
                   </button>
