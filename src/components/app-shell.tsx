@@ -29,7 +29,7 @@ function AuthenticatedShell({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <main className="bg-mesh flex-1 pb-24">{children}</main>
+      <main className="flex-1 overflow-x-hidden pb-28">{children}</main>
       <TabBar />
     </>
   );

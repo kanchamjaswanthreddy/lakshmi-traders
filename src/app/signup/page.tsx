@@ -7,9 +7,13 @@ import { createClient } from "@/lib/supabase/client";
 
 const SPRING = { type: "spring" as const, stiffness: 260, damping: 24 };
 
+function usernameToEmail(username: string): string {
+  return `${username.toLowerCase().replace(/[^a-z0-9]/g, "")}@lakshmitraders.app`;
+}
+
 export default function SignupPage() {
   const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -20,6 +24,11 @@ export default function SignupPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
+
+    if (!username.trim() || username.trim().length < 3) {
+      setError("Username must be at least 3 characters");
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError("Passwords do not match");
@@ -33,11 +42,12 @@ export default function SignupPage() {
 
     setSubmitting(true);
 
+    const email = usernameToEmail(username);
     const { error: authError } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { full_name: fullName },
+        data: { full_name: fullName, username: username.trim() },
       },
     });
 
@@ -183,23 +193,23 @@ export default function SignupPage() {
                       transition={{ ...SPRING, delay: 0.3 }}
                     >
                       <label
-                        htmlFor="email"
+                        htmlFor="username"
                         className="mb-1.5 block text-[13px] font-medium text-muted-foreground"
                       >
-                        Email
+                        Username
                       </label>
                       <input
-                        id="email"
-                        type="email"
-                        autoComplete="email"
+                        id="username"
+                        type="text"
+                        autoComplete="username"
                         required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
                         className="w-full rounded-2xl bg-secondary px-4 py-3.5 text-[16px] text-foreground shadow-inner placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-copper/40"
                         style={{
                           boxShadow: "inset 0 1px 3px rgba(0,0,0,0.06)",
                         }}
-                        placeholder="you@example.com"
+                        placeholder="Choose a username"
                       />
                     </motion.div>
 
