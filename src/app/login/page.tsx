@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 
@@ -172,6 +173,21 @@ export default function LoginPage() {
                   </button>
                 </motion.div>
               </form>
+
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ ...SPRING, delay: 0.4 }}
+                className="mt-6 text-center text-[14px] text-muted-foreground"
+              >
+                Need an account?{" "}
+                <Link
+                  href="/signup"
+                  className="font-semibold text-foreground underline underline-offset-2 transition-opacity active:scale-95 active:opacity-70"
+                >
+                  Request access
+                </Link>
+              </motion.p>
             </div>
           </div>
         </motion.div>

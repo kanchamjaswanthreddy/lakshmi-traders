@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { FolderOpen, Package, Upload, Camera, ChevronRight } from "lucide-react";
+import { FolderOpen, Package, Upload, Camera, ChevronRight, Users, Layers } from "lucide-react";
 import { useAuth } from "@/components/auth-provider";
 import { createClient } from "@/lib/supabase/client";
 
@@ -21,6 +21,12 @@ const MANAGE_LINKS: ManageLink[] = [
     icon: FolderOpen,
     title: "Categories",
     description: "Manage categories and discount percentages",
+  },
+  {
+    href: "/manage/subcategories",
+    icon: Layers,
+    title: "Subcategories",
+    description: "Manage subcategories under each category",
   },
   {
     href: "/manage/products",
@@ -40,12 +46,19 @@ const MANAGE_LINKS: ManageLink[] = [
     title: "Review Photos",
     description: "Review price photos submitted by staff",
   },
+  {
+    href: "/manage/users",
+    icon: Users,
+    title: "User Approvals",
+    description: "Approve or reject new user access requests",
+  },
 ];
 
 export default function ManagePage() {
   const { profile, loading } = useAuth();
   const router = useRouter();
   const [pendingPhotoCount, setPendingPhotoCount] = useState<number>(0);
+  const [pendingUserCount, setPendingUserCount] = useState<number>(0);
 
   useEffect(() => {
     if (!loading && profile?.role !== "admin") {
@@ -54,16 +67,23 @@ export default function ManagePage() {
   }, [loading, profile, router]);
 
   useEffect(() => {
-    async function fetchPendingCount() {
+    async function fetchPendingCounts() {
       const supabase = createClient();
-      const { count } = await supabase
-        .from("photo_submissions")
-        .select("*", { count: "exact", head: true })
-        .eq("status", "pending");
-      setPendingPhotoCount(count ?? 0);
+      const [photoResult, userResult] = await Promise.all([
+        supabase
+          .from("photo_submissions")
+          .select("*", { count: "exact", head: true })
+          .eq("status", "pending"),
+        supabase
+          .from("profiles")
+          .select("*", { count: "exact", head: true })
+          .eq("status", "pending"),
+      ]);
+      setPendingPhotoCount(photoResult.count ?? 0);
+      setPendingUserCount(userResult.count ?? 0);
     }
     if (profile?.role === "admin") {
-      fetchPendingCount();
+      fetchPendingCounts();
     }
   }, [profile]);
 
@@ -118,6 +138,11 @@ export default function ManagePage() {
                 {link.href === "/manage/photos" && pendingPhotoCount > 0 && (
                   <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-copper px-1.5 text-[11px] font-bold text-white">
                     {pendingPhotoCount}
+                  </span>
+                )}
+                {link.href === "/manage/users" && pendingUserCount > 0 && (
+                  <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-copper px-1.5 text-[11px] font-bold text-white">
+                    {pendingUserCount}
                   </span>
                 )}
               </div>

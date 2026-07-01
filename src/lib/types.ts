@@ -21,6 +21,14 @@ export interface Product {
 export interface Profile {
   id: string;
   role: "admin" | "viewer";
+  status: "pending" | "active" | "rejected";
+  created_at: string;
+}
+
+export interface Subcategory {
+  id: string;
+  category_id: string;
+  name: string;
   created_at: string;
 }
 
