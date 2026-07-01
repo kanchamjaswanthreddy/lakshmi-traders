@@ -82,14 +82,14 @@ export function QuoteCalculator({ categories, products }: QuoteCalculatorProps) 
   };
 
   return (
-    <div className="px-4 pt-2 pb-8">
+    <div className="bg-mesh min-h-dvh px-4 pt-2 pb-8">
       {/* Header */}
       <div className="mb-5 flex items-start justify-between">
         <motion.h1
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={SPRING_CONFIG}
-          className="text-3xl font-bold tracking-tight text-foreground"
+          className="large-title text-foreground"
         >
           Special Quote
         </motion.h1>
@@ -100,7 +100,7 @@ export function QuoteCalculator({ categories, products }: QuoteCalculatorProps) 
             animate={{ opacity: 1, scale: 1 }}
             transition={SPRING_CONFIG}
             onClick={handlePrint}
-            className="no-print flex h-10 w-10 items-center justify-center rounded-full bg-copper/10 transition-transform active:scale-95"
+            className="no-print card-glow flex h-11 w-11 items-center justify-center rounded-[16px] bg-copper/10 transition-transform duration-150 active:scale-95"
             aria-label="Print quote"
           >
             <Printer size={20} className="text-copper" strokeWidth={1.8} />
@@ -127,10 +127,10 @@ export function QuoteCalculator({ categories, products }: QuoteCalculatorProps) 
         transition={{ ...SPRING_CONFIG, delay: 0.05 }}
         className="no-print mb-5 space-y-3"
       >
-        {/* Discount input */}
-        <div className="ios-group flex items-center gap-3 px-4 py-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-copper/10">
-            <Percent size={20} className="text-copper" strokeWidth={1.8} />
+        {/* Discount input card */}
+        <div className="ios-group card-glow flex items-center gap-4 rounded-[20px] px-5 py-4">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] bg-gradient-to-br from-[#B5651D] to-[#D4924B]">
+            <Percent size={22} className="text-white" strokeWidth={2} />
           </div>
           <div className="flex-1 min-w-0">
             <label
@@ -149,21 +149,21 @@ export function QuoteCalculator({ categories, products }: QuoteCalculatorProps) 
               value={discount}
               onChange={(e) => setDiscount(e.target.value)}
               placeholder="Enter discount %"
-              className="mt-0.5 w-full border-none bg-transparent text-[22px] font-semibold tracking-tight text-foreground placeholder:text-muted-foreground/50 focus:outline-none price-mono"
+              className="mt-0.5 w-full border-none bg-transparent text-[26px] font-bold tracking-tight text-foreground placeholder:text-muted-foreground/40 focus:outline-none price-mono"
               autoFocus
             />
           </div>
           {discount && (
-            <span className="price-mono shrink-0 text-lg font-semibold text-copper">
+            <span className="price-mono shrink-0 rounded-xl bg-copper/10 px-3 py-1.5 text-lg font-bold text-copper">
               {discountNum}%
             </span>
           )}
         </div>
 
         {/* Category filter */}
-        <div className="ios-group relative flex items-center gap-3 px-4 py-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-copper/10">
-            <Package size={20} className="text-copper" strokeWidth={1.8} />
+        <div className="ios-group card-glow relative flex items-center gap-3 rounded-[20px] px-5 py-4">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] bg-copper/10">
+            <Package size={22} className="text-copper" strokeWidth={1.8} />
           </div>
           <div className="flex-1 min-w-0">
             <span className="block text-[13px] font-medium text-muted-foreground">
@@ -198,16 +198,16 @@ export function QuoteCalculator({ categories, products }: QuoteCalculatorProps) 
         {!hasValidDiscount ? (
           <motion.div
             key="empty"
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={SPRING_CONFIG}
             className="mt-12 flex flex-col items-center justify-center text-center"
           >
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-copper/10">
-              <Percent size={32} className="text-copper/60" strokeWidth={1.5} />
+            <div className="card-glow flex h-20 w-20 items-center justify-center rounded-[20px] bg-copper/10">
+              <Percent size={36} className="text-copper/60" strokeWidth={1.5} />
             </div>
-            <p className="mt-4 text-[17px] font-medium text-foreground">
+            <p className="mt-5 text-[17px] font-medium text-foreground">
               Enter a discount
             </p>
             <p className="mt-1 text-[15px] text-muted-foreground">
@@ -220,7 +220,7 @@ export function QuoteCalculator({ categories, products }: QuoteCalculatorProps) 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
             {/* Product count */}
             <motion.p
@@ -237,22 +237,23 @@ export function QuoteCalculator({ categories, products }: QuoteCalculatorProps) 
               {grouped.map((group, groupIndex) => (
                 <motion.section
                   key={group.categoryName}
-                  initial={{ opacity: 0, y: 16 }}
+                  initial={{ opacity: 0, y: 24 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{
                     ...SPRING_CONFIG,
-                    delay: 0.05 + groupIndex * 0.04,
+                    delay: 0.05 + groupIndex * 0.06,
                   }}
                   aria-labelledby={`cat-heading-${groupIndex}`}
                 >
                   <h2
                     id={`cat-heading-${groupIndex}`}
-                    className="mb-1.5 px-1 text-[13px] font-semibold uppercase tracking-wider text-muted-foreground"
+                    className="mb-1.5 flex items-center gap-2 px-1 text-[13px] font-semibold uppercase tracking-wider text-muted-foreground"
                   >
+                    <span className="inline-block h-2 w-2 rounded-full bg-copper/50" />
                     {group.categoryName}
                   </h2>
 
-                  <div className="ios-group overflow-hidden">
+                  <div className="ios-group card-glow overflow-hidden rounded-[20px]">
                     {group.items.map((product, itemIndex) => {
                       const quotePrice = computeQuotePrice(
                         product.master_price,
@@ -262,18 +263,18 @@ export function QuoteCalculator({ categories, products }: QuoteCalculatorProps) 
                       return (
                         <motion.div
                           key={product.id}
-                          initial={{ opacity: 0, x: -8 }}
-                          animate={{ opacity: 1, x: 0 }}
+                          initial={{ opacity: 0, y: 16 }}
+                          animate={{ opacity: 1, y: 0 }}
                           transition={{
                             ...SPRING_CONFIG,
                             delay:
                               0.08 +
-                              groupIndex * 0.04 +
-                              itemIndex * 0.02,
+                              groupIndex * 0.06 +
+                              itemIndex * 0.03,
                           }}
                           className={`flex items-center justify-between gap-3 px-4 py-3 ${
                             itemIndex < group.items.length - 1
-                              ? "border-b border-border"
+                              ? "border-b border-border/50"
                               : ""
                           }`}
                         >
@@ -289,10 +290,10 @@ export function QuoteCalculator({ categories, products }: QuoteCalculatorProps) 
                           </div>
 
                           <div className="shrink-0 text-right">
-                            <p className="price-mono text-[13px] text-muted-foreground line-through">
+                            <p className="price-mono text-[13px] text-muted-foreground/60 line-through">
                               &#8377;{formatPrice(product.master_price)}
                             </p>
-                            <p className="price-mono text-[17px] font-bold text-copper">
+                            <p className="price-mono text-[18px] font-bold text-copper">
                               &#8377;{formatPrice(quotePrice)}
                             </p>
                           </div>

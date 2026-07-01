@@ -279,12 +279,12 @@ export function ManageProducts({
   }
 
   return (
-    <div className="px-4 pt-2 pb-8">
+    <div className="bg-mesh min-h-dvh px-4 pt-2 pb-8">
       {/* Header */}
       <div className="mb-1 flex items-center gap-2">
         <Link
           href="/manage"
-          className="flex h-9 w-9 items-center justify-center rounded-full transition-colors active:scale-95 active:bg-secondary"
+          className="flex h-9 w-9 items-center justify-center rounded-full transition-colors duration-150 active:scale-95 active:bg-secondary"
           aria-label="Back to manage"
         >
           <ArrowLeft size={22} className="text-copper" strokeWidth={2} />
@@ -296,7 +296,7 @@ export function ManageProducts({
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={SPRING}
-          className="text-3xl font-bold tracking-tight text-foreground"
+          className="large-title text-foreground"
         >
           Products
         </motion.h1>
@@ -306,7 +306,7 @@ export function ManageProducts({
           animate={{ opacity: 1, scale: 1 }}
           transition={SPRING}
           onClick={() => setShowAddSheet(true)}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-copper/10 transition-transform active:scale-95"
+          className="card-glow flex h-11 w-11 items-center justify-center rounded-[16px] bg-copper/10 transition-transform duration-150 active:scale-95"
           aria-label="Add product"
         >
           <Plus size={22} className="text-copper" strokeWidth={2} />
@@ -324,7 +324,7 @@ export function ManageProducts({
         <div className="relative">
           <Search
             size={18}
-            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
             strokeWidth={2}
           />
           <input
@@ -332,7 +332,8 @@ export function ManageProducts({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search products"
-            className="ios-search w-full text-foreground placeholder:text-muted-foreground/60 focus:outline-none"
+            className="w-full rounded-2xl bg-secondary py-3.5 pl-11 pr-4 text-[16px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-copper/30"
+            style={{ boxShadow: "inset 0 1px 3px rgba(0,0,0,0.05)" }}
           />
           {search && (
             <button
@@ -346,9 +347,9 @@ export function ManageProducts({
         </div>
 
         {/* Category filter */}
-        <div className="ios-group relative flex items-center gap-3 px-4 py-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-copper/10">
-            <Package size={20} className="text-copper" strokeWidth={1.8} />
+        <div className="ios-group card-glow relative flex items-center gap-3 rounded-[20px] px-5 py-4">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] bg-copper/10">
+            <Package size={22} className="text-copper" strokeWidth={1.8} />
           </div>
           <div className="flex-1 min-w-0">
             <span className="block text-[13px] font-medium text-muted-foreground">
@@ -419,18 +420,19 @@ export function ManageProducts({
             >
               <h2
                 id={`prod-cat-${groupIndex}`}
-                className="mb-1.5 px-1 text-[13px] font-semibold uppercase tracking-wider text-muted-foreground"
+                className="mb-1.5 flex items-center gap-2 px-1 text-[13px] font-semibold uppercase tracking-wider text-muted-foreground"
               >
+                <span className="inline-block h-2 w-2 rounded-full bg-copper/50" />
                 {group.categoryName}
               </h2>
 
-              <div className="ios-group overflow-hidden">
+              <div className="ios-group card-glow overflow-hidden rounded-[20px]">
                 {group.items.map((product, itemIndex) => (
                   <div
                     key={product.id}
-                    className={`px-4 py-3 ${
+                    className={`px-4 py-3 transition-transform duration-150 active:scale-[0.98] ${
                       itemIndex < group.items.length - 1
-                        ? "border-b border-border"
+                        ? "border-b border-border/50"
                         : ""
                     }`}
                   >
@@ -539,7 +541,7 @@ export function ManageProducts({
             >
               <button
                 onClick={() => setVisibleCount((prev) => prev + PAGE_SIZE)}
-                className="rounded-2xl bg-secondary px-6 py-3 text-[15px] font-semibold text-foreground transition-all active:scale-95"
+                className="card-glow rounded-2xl bg-secondary px-6 py-3 text-[15px] font-semibold text-foreground transition-transform duration-150 active:scale-95"
               >
                 Load More
               </button>
@@ -569,8 +571,8 @@ export function ManageProducts({
               animate="visible"
               exit="hidden"
               transition={{ ...SPRING, stiffness: 400 }}
-              className="fixed inset-x-0 bottom-0 z-50 rounded-t-3xl bg-background safe-bottom"
-              style={{ maxHeight: "85dvh" }}
+              className="fixed inset-x-0 bottom-0 z-50 rounded-t-[28px] bg-background safe-bottom"
+              style={{ maxHeight: "85dvh", backdropFilter: "blur(40px) saturate(200%)", WebkitBackdropFilter: "blur(40px) saturate(200%)" }}
             >
               <div className="mx-auto mt-2 h-1.5 w-10 rounded-full bg-muted-foreground/30" />
 
@@ -593,7 +595,7 @@ export function ManageProducts({
                 </div>
 
                 <div className="space-y-4">
-                  <div className="ios-group px-4 py-3">
+                  <div className="ios-group card-glow rounded-xl px-4 py-3">
                     <label className="block text-[13px] font-medium text-muted-foreground">
                       Product Name
                     </label>
@@ -608,7 +610,7 @@ export function ManageProducts({
                   </div>
 
                   <div className="flex gap-3">
-                    <div className="ios-group flex-1 px-4 py-3">
+                    <div className="ios-group card-glow flex-1 rounded-xl px-4 py-3">
                       <label className="block text-[13px] font-medium text-muted-foreground">
                         Unit
                       </label>
@@ -621,7 +623,7 @@ export function ManageProducts({
                       />
                     </div>
 
-                    <div className="ios-group flex-1 px-4 py-3">
+                    <div className="ios-group card-glow flex-1 rounded-xl px-4 py-3">
                       <label className="block text-[13px] font-medium text-muted-foreground">
                         Master Price
                       </label>
@@ -638,7 +640,7 @@ export function ManageProducts({
                     </div>
                   </div>
 
-                  <div className="ios-group relative px-4 py-3">
+                  <div className="ios-group card-glow relative rounded-xl px-4 py-3">
                     <label className="block text-[13px] font-medium text-muted-foreground">
                       Category
                     </label>
@@ -666,7 +668,7 @@ export function ManageProducts({
                   <button
                     onClick={handleAddProduct}
                     disabled={!newName.trim() || saving}
-                    className="w-full rounded-2xl bg-copper py-3.5 text-[17px] font-semibold text-primary-foreground transition-all active:scale-95 disabled:opacity-50"
+                    className="w-full rounded-2xl bg-gradient-to-r from-[#B5651D] to-[#D4924B] py-3.5 text-[17px] font-semibold text-white transition-transform duration-150 active:scale-[0.97] disabled:opacity-50"
                   >
                     {saving ? "Adding..." : "Add Product"}
                   </button>
@@ -698,7 +700,8 @@ export function ManageProducts({
               animate="visible"
               exit="hidden"
               transition={{ ...SPRING, stiffness: 400 }}
-              className="fixed inset-x-0 bottom-0 z-50 rounded-t-3xl bg-background safe-bottom"
+              className="fixed inset-x-0 bottom-0 z-50 rounded-t-[28px] bg-background safe-bottom"
+              style={{ backdropFilter: "blur(40px) saturate(200%)", WebkitBackdropFilter: "blur(40px) saturate(200%)" }}
             >
               <div className="mx-auto mt-2 h-1.5 w-10 rounded-full bg-muted-foreground/30" />
 

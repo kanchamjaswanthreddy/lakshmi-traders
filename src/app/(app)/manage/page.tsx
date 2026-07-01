@@ -1,11 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { FolderOpen, Package, Upload, ChevronRight } from "lucide-react";
+import { FolderOpen, Package, Upload, Camera, ChevronRight } from "lucide-react";
 import { useAuth } from "@/components/auth-provider";
+import { createClient } from "@/lib/supabase/client";
 
 interface ManageLink {
   href: string;
@@ -33,17 +34,38 @@ const MANAGE_LINKS: ManageLink[] = [
     title: "Upload Price List",
     description: "Bulk import products from a PDF price list",
   },
+  {
+    href: "/manage/photos",
+    icon: Camera,
+    title: "Review Photos",
+    description: "Review price photos submitted by staff",
+  },
 ];
 
 export default function ManagePage() {
   const { profile, loading } = useAuth();
   const router = useRouter();
+  const [pendingPhotoCount, setPendingPhotoCount] = useState<number>(0);
 
   useEffect(() => {
     if (!loading && profile?.role !== "admin") {
       router.replace("/");
     }
   }, [loading, profile, router]);
+
+  useEffect(() => {
+    async function fetchPendingCount() {
+      const supabase = createClient();
+      const { count } = await supabase
+        .from("photo_submissions")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "pending");
+      setPendingPhotoCount(count ?? 0);
+    }
+    if (profile?.role === "admin") {
+      fetchPendingCount();
+    }
+  }, [profile]);
 
   if (loading) {
     return (
@@ -89,9 +111,16 @@ export default function ManagePage() {
             </div>
 
             <div className="flex-1 min-w-0">
-              <p className="text-[17px] font-medium leading-tight text-foreground">
-                {link.title}
-              </p>
+              <div className="flex items-center gap-2">
+                <p className="text-[17px] font-medium leading-tight text-foreground">
+                  {link.title}
+                </p>
+                {link.href === "/manage/photos" && pendingPhotoCount > 0 && (
+                  <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-copper px-1.5 text-[11px] font-bold text-white">
+                    {pendingPhotoCount}
+                  </span>
+                )}
+              </div>
               <p className="mt-0.5 text-[13px] leading-tight text-muted-foreground">
                 {link.description}
               </p>

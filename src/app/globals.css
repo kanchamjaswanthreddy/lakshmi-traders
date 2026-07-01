@@ -191,16 +191,134 @@
   letter-spacing: -0.4px;
 }
 
-/* Print styles for Quote page */
+/* Hide print-only elements on screen */
+.print-only {
+  display: none !important;
+}
+
+/* Print styles */
 @media print {
   .no-print { display: none !important; }
   .tab-bar { display: none !important; }
-  body { background: white !important; }
+  body {
+    background: white !important;
+    color: #000 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
   .glass, .glass-elevated, .ios-group {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     background: white !important;
     border: 1px solid #e5e5e5 !important;
+  }
+
+  /* Hide all screen-only content during print */
+  .bg-mesh > *:not(.print-only) {
+    display: none !important;
+  }
+
+  /* Show print layout */
+  .print-only {
+    display: block !important;
+  }
+
+  .bg-mesh {
+    background-image: none !important;
+    padding: 0 !important;
+    min-height: auto !important;
+  }
+
+  /* Print header */
+  .print-header {
+    text-align: center;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #333;
+  }
+  .print-store-name {
+    font-size: 22px;
+    font-weight: 800;
+    color: #000;
+    margin: 0;
+    letter-spacing: -0.5px;
+  }
+  .print-store-location {
+    font-size: 14px;
+    color: #444;
+    margin: 2px 0 0;
+  }
+  .print-date {
+    font-size: 11px;
+    color: #666;
+    margin: 6px 0 0;
+  }
+
+  /* Category sections */
+  .print-category-section {
+    margin-bottom: 20px;
+    page-break-inside: avoid;
+  }
+  .print-category-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #000;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0 0 6px;
+    padding: 4px 8px;
+    background: #f0f0f0 !important;
+    border-left: 3px solid #B5651D;
+  }
+
+  /* Print table */
+  .print-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    margin-bottom: 4px;
+  }
+  .print-th {
+    background: #f8f8f8 !important;
+    border: 1px solid #ccc;
+    padding: 5px 8px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: #333;
+  }
+  .print-th-sno { width: 40px; text-align: center; }
+  .print-th-name { }
+  .print-th-unit { width: 60px; }
+  .print-th-price { width: 90px; text-align: right; }
+
+  .print-td {
+    border: 1px solid #ddd;
+    padding: 4px 8px;
+    font-size: 11px;
+    color: #000;
+  }
+  .print-td-sno { text-align: center; color: #666; }
+  .print-td-name { font-weight: 500; }
+  .print-td-unit { color: #555; }
+  .print-td-price {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  }
+  .print-td-highlight {
+    font-weight: 700;
+    color: #B5651D !important;
+  }
+  .print-row-even td {
+    background: #fafafa !important;
+  }
+
+  @page {
+    margin: 12mm 10mm;
+    size: A4;
   }
 }
 
@@ -239,4 +357,60 @@ html, body {
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
   border-radius: 8px;
+}
+
+/* Ambient glow behind cards */
+.card-glow {
+  box-shadow:
+    0 0 0 0.5px rgba(255,255,255,0.3),
+    0 2px 8px rgba(0,0,0,0.04),
+    0 8px 32px rgba(0,0,0,0.06);
+}
+.dark .card-glow {
+  box-shadow:
+    0 0 0 0.5px rgba(255,255,255,0.08),
+    0 2px 8px rgba(0,0,0,0.2),
+    0 8px 32px rgba(0,0,0,0.4);
+}
+
+/* Large title that collapses on scroll */
+.large-title {
+  font-size: clamp(28px, 8vw, 34px);
+  font-weight: 700;
+  letter-spacing: -0.6px;
+  line-height: 1.1;
+}
+
+/* Subtle gradient background */
+.bg-mesh {
+  background-image:
+    radial-gradient(at 20% 20%, rgba(181,101,29,0.06) 0%, transparent 50%),
+    radial-gradient(at 80% 80%, rgba(181,101,29,0.04) 0%, transparent 50%);
+}
+.dark .bg-mesh {
+  background-image:
+    radial-gradient(at 20% 20%, rgba(212,146,75,0.08) 0%, transparent 50%),
+    radial-gradient(at 80% 80%, rgba(212,146,75,0.05) 0%, transparent 50%);
+}
+
+/* Login shimmer effect on button */
+@keyframes loginShimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.login-btn-shimmer {
+  background-size: 200% 100%;
+  background-image: linear-gradient(
+    105deg,
+    transparent 20%,
+    rgba(255,255,255,0.15) 45%,
+    rgba(255,255,255,0.3) 50%,
+    rgba(255,255,255,0.15) 55%,
+    transparent 80%
+  );
+}
+
+.login-btn-shimmer:hover {
+  animation: loginShimmer 1.8s ease-in-out infinite;
 }

@@ -177,12 +177,12 @@ export function ManageCategories({ initialCategories }: ManageCategoriesProps) {
   }
 
   return (
-    <div className="px-4 pt-2 pb-8">
+    <div className="bg-mesh min-h-dvh px-4 pt-2 pb-8">
       {/* Header */}
       <div className="mb-1 flex items-center gap-2">
         <Link
           href="/manage"
-          className="flex h-9 w-9 items-center justify-center rounded-full transition-colors active:scale-95 active:bg-secondary"
+          className="flex h-9 w-9 items-center justify-center rounded-full transition-colors duration-150 active:scale-95 active:bg-secondary"
           aria-label="Back to manage"
         >
           <ArrowLeft size={22} className="text-copper" strokeWidth={2} />
@@ -194,7 +194,7 @@ export function ManageCategories({ initialCategories }: ManageCategoriesProps) {
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={SPRING}
-          className="text-3xl font-bold tracking-tight text-foreground"
+          className="large-title text-foreground"
         >
           Categories
         </motion.h1>
@@ -204,7 +204,7 @@ export function ManageCategories({ initialCategories }: ManageCategoriesProps) {
           animate={{ opacity: 1, scale: 1 }}
           transition={SPRING}
           onClick={() => setShowAddSheet(true)}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-copper/10 transition-transform active:scale-95"
+          className="card-glow flex h-11 w-11 items-center justify-center rounded-[16px] bg-copper/10 transition-transform duration-150 active:scale-95"
           aria-label="Add category"
         >
           <Plus size={22} className="text-copper" strokeWidth={2} />
@@ -240,7 +240,7 @@ export function ManageCategories({ initialCategories }: ManageCategoriesProps) {
             {categories.length} categor{categories.length !== 1 ? "ies" : "y"}
           </p>
 
-          <div className="ios-group overflow-hidden">
+          <div className="ios-group card-glow overflow-hidden rounded-[20px]">
             {categories.map((category, index) => (
               <div
                 key={category.id}
@@ -354,8 +354,8 @@ export function ManageCategories({ initialCategories }: ManageCategoriesProps) {
               animate="visible"
               exit="hidden"
               transition={{ ...SPRING, stiffness: 400 }}
-              className="fixed inset-x-0 bottom-0 z-50 rounded-t-3xl bg-background safe-bottom"
-              style={{ maxHeight: "85dvh" }}
+              className="fixed inset-x-0 bottom-0 z-50 rounded-t-[28px] bg-background safe-bottom"
+              style={{ maxHeight: "85dvh", backdropFilter: "blur(40px) saturate(200%)", WebkitBackdropFilter: "blur(40px) saturate(200%)" }}
             >
               <div className="mx-auto mt-2 h-1.5 w-10 rounded-full bg-muted-foreground/30" />
 
@@ -374,7 +374,7 @@ export function ManageCategories({ initialCategories }: ManageCategoriesProps) {
                 </div>
 
                 <div className="space-y-4">
-                  <div className="ios-group px-4 py-3">
+                  <div className="ios-group card-glow rounded-xl px-4 py-3">
                     <label className="block text-[13px] font-medium text-muted-foreground">
                       Category Name
                     </label>
@@ -388,7 +388,7 @@ export function ManageCategories({ initialCategories }: ManageCategoriesProps) {
                     />
                   </div>
 
-                  <div className="ios-group px-4 py-3">
+                  <div className="ios-group card-glow rounded-xl px-4 py-3">
                     <label className="block text-[13px] font-medium text-muted-foreground">
                       Description (optional)
                     </label>
@@ -402,7 +402,7 @@ export function ManageCategories({ initialCategories }: ManageCategoriesProps) {
                   </div>
 
                   <div className="flex gap-3">
-                    <div className="ios-group flex-1 px-4 py-3">
+                    <div className="ios-group card-glow flex-1 rounded-xl px-4 py-3">
                       <label className="block text-[13px] font-medium text-muted-foreground">
                         Regular Discount %
                       </label>
@@ -419,7 +419,7 @@ export function ManageCategories({ initialCategories }: ManageCategoriesProps) {
                       />
                     </div>
 
-                    <div className="ios-group flex-1 px-4 py-3">
+                    <div className="ios-group card-glow flex-1 rounded-xl px-4 py-3">
                       <label className="block text-[13px] font-medium text-muted-foreground">
                         Shop Owner Discount %
                       </label>
@@ -440,7 +440,7 @@ export function ManageCategories({ initialCategories }: ManageCategoriesProps) {
                   <button
                     onClick={handleAddCategory}
                     disabled={!newName.trim() || saving}
-                    className="w-full rounded-2xl bg-copper py-3.5 text-[17px] font-semibold text-primary-foreground transition-all active:scale-95 disabled:opacity-50"
+                    className="w-full rounded-2xl bg-gradient-to-r from-[#B5651D] to-[#D4924B] py-3.5 text-[17px] font-semibold text-white transition-transform duration-150 active:scale-[0.97] disabled:opacity-50"
                   >
                     {saving ? "Adding..." : "Add Category"}
                   </button>
@@ -472,7 +472,8 @@ export function ManageCategories({ initialCategories }: ManageCategoriesProps) {
               animate="visible"
               exit="hidden"
               transition={{ ...SPRING, stiffness: 400 }}
-              className="fixed inset-x-0 bottom-0 z-50 rounded-t-3xl bg-background safe-bottom"
+              className="fixed inset-x-0 bottom-0 z-50 rounded-t-[28px] bg-background safe-bottom"
+              style={{ backdropFilter: "blur(40px) saturate(200%)", WebkitBackdropFilter: "blur(40px) saturate(200%)" }}
             >
               <div className="mx-auto mt-2 h-1.5 w-10 rounded-full bg-muted-foreground/30" />
 
