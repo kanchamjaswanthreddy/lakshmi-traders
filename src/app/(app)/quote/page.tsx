@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { QuoteCalculator } from "@/components/quote-calculator";
 import type { Category, Product } from "@/lib/types";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 30;
 
 export default async function QuotePage() {
   const supabase = await createClient();

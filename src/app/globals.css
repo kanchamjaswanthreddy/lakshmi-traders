@@ -334,28 +334,10 @@ html, body {
   letter-spacing: -0.5px;
 }
 
-/* Safe area padding for PWA standalone mode */
-.safe-bottom {
-  padding-bottom: 16px;
-}
-@supports (padding: env(safe-area-inset-bottom)) {
-  .safe-bottom {
-    padding-bottom: calc(env(safe-area-inset-bottom) + 8px);
-  }
-}
-
-/* PWA standalone mode adjustments */
+/* PWA standalone: extra bottom padding for main content behind tab bar */
 @media (display-mode: standalone) {
-  .safe-bottom {
-    padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 8px);
-  }
-  /* Extra bottom padding for main content in standalone */
   .pwa-main-pad {
-    padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 100px);
-  }
-  /* Ensure tab bar sits above the home indicator */
-  .pwa-tab-bottom {
-    bottom: env(safe-area-inset-bottom, 0px);
+    padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 100px) !important;
   }
 }
 

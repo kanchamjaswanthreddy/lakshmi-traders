@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ProductsList } from "@/components/products-list";
 import type { Category, Product } from "@/lib/types";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 30;
 
 export default async function ProductsPage() {
   const supabase = await createClient();
