@@ -351,6 +351,11 @@ html, body {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
+/* Hide tab bar when a bottom sheet is open */
+body[data-sheet-open="true"] nav.no-print {
+  display: none !important;
+}
+
 /* Skeleton shimmer animation */
 @keyframes shimmer {
   0% { background-position: -200% 0; }
