@@ -408,14 +408,8 @@ export function ManageProducts({
       ) : (
         <div className="space-y-5">
           {visibleGroups.map((group, groupIndex) => (
-            <motion.section
+            <section
               key={group.categoryId}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                ...SPRING,
-                delay: 0.08 + groupIndex * 0.04,
-              }}
               aria-labelledby={`prod-cat-${groupIndex}`}
             >
               <h2
@@ -528,7 +522,7 @@ export function ManageProducts({
                   </div>
                 ))}
               </div>
-            </motion.section>
+            </section>
           ))}
 
           {/* Load More */}

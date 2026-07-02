@@ -29,7 +29,7 @@ function AuthenticatedShell({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <main className="flex-1 overflow-x-hidden pb-32 pwa-main-pad">{children}</main>
+      <main className="flex-1 overflow-x-hidden pb-20 pwa-main-pad">{children}</main>
       <TabBar />
     </>
   );

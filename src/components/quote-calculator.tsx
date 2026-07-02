@@ -235,14 +235,8 @@ export function QuoteCalculator({ categories, products }: QuoteCalculatorProps) 
             {/* Grouped product list */}
             <div className="space-y-5">
               {grouped.map((group, groupIndex) => (
-                <motion.section
+                <section
                   key={group.categoryName}
-                  initial={{ opacity: 0, y: 24 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    ...SPRING_CONFIG,
-                    delay: 0.05 + groupIndex * 0.06,
-                  }}
                   aria-labelledby={`cat-heading-${groupIndex}`}
                 >
                   <h2
@@ -261,17 +255,8 @@ export function QuoteCalculator({ categories, products }: QuoteCalculatorProps) 
                       );
 
                       return (
-                        <motion.div
+                        <div
                           key={product.id}
-                          initial={{ opacity: 0, y: 16 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{
-                            ...SPRING_CONFIG,
-                            delay:
-                              0.08 +
-                              groupIndex * 0.06 +
-                              itemIndex * 0.03,
-                          }}
                           className={`flex items-center justify-between gap-3 px-4 py-3 ${
                             itemIndex < group.items.length - 1
                               ? "border-b border-border/50"
@@ -297,11 +282,11 @@ export function QuoteCalculator({ categories, products }: QuoteCalculatorProps) 
                               &#8377;{formatPrice(quotePrice)}
                             </p>
                           </div>
-                        </motion.div>
+                        </div>
                       );
                     })}
                   </div>
-                </motion.section>
+                </section>
               ))}
             </div>
           </motion.div>

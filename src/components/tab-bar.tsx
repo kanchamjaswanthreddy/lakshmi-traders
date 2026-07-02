@@ -29,49 +29,45 @@ export function TabBar() {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-50 no-print"
-      style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+      className="fixed inset-x-0 bottom-0 z-50 no-print border-t border-border/40"
+      style={{
+        background: "var(--surface-elevated)",
+        backdropFilter: "blur(40px) saturate(200%)",
+        WebkitBackdropFilter: "blur(40px) saturate(200%)",
+        paddingBottom: "env(safe-area-inset-bottom, 0px)",
+      }}
     >
-      <div
-        className="border-t border-border/40"
-        style={{
-          background: "var(--surface-elevated)",
-          backdropFilter: "blur(40px) saturate(200%)",
-          WebkitBackdropFilter: "blur(40px) saturate(200%)",
-        }}
-      >
-        <div className="mx-auto flex max-w-lg items-center justify-around px-2 py-1.5">
-          {visibleTabs.map((tab) => {
-            const isActive =
-              tab.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(tab.href);
+      <div className="flex items-center justify-around px-2 py-1.5">
+        {visibleTabs.map((tab) => {
+          const isActive =
+            tab.href === "/"
+              ? pathname === "/"
+              : pathname.startsWith(tab.href);
 
-            return (
-              <Link
-                key={tab.href}
-                href={tab.href}
-                prefetch={true}
-                className="flex flex-1 flex-col items-center gap-0.5 py-1 transition-transform duration-100 active:scale-90"
+          return (
+            <Link
+              key={tab.href}
+              href={tab.href}
+              prefetch={true}
+              className="flex flex-1 flex-col items-center gap-0.5 py-1 transition-transform duration-100 active:scale-90"
+            >
+              <tab.icon
+                size={22}
+                strokeWidth={isActive ? 2.2 : 1.5}
+                className={
+                  isActive ? "text-foreground" : "text-muted-foreground/50"
+                }
+              />
+              <span
+                className={`text-[10px] font-semibold ${
+                  isActive ? "text-foreground" : "text-muted-foreground/50"
+                }`}
               >
-                <tab.icon
-                  size={22}
-                  strokeWidth={isActive ? 2.2 : 1.5}
-                  className={
-                    isActive ? "text-foreground" : "text-muted-foreground/50"
-                  }
-                />
-                <span
-                  className={`text-[10px] font-semibold ${
-                    isActive ? "text-foreground" : "text-muted-foreground/50"
-                  }`}
-                >
-                  {tab.label}
-                </span>
-              </Link>
-            );
-          })}
-        </div>
+                {tab.label}
+              </span>
+            </Link>
+          );
+        })}
       </div>
     </nav>
   );

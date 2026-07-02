@@ -392,17 +392,14 @@ export function ProductsList({ categories, products }: ProductsListProps) {
             </div>
 
             <div className="space-y-6">
-              {grouped.map((group, gi) => {
+              {grouped.map((group) => {
                 const isCollapsed = collapsedCats.has(group.categoryName);
                 const rPct = group.category?.regular_discount_pct ?? 0;
                 const sPct = group.category?.shop_owner_discount_pct ?? 0;
 
                 return (
-                  <motion.section
+                  <section
                     key={group.categoryName}
-                    initial={{ opacity: 0, y: 24 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ ...SPRING, delay: 0.05 + gi * 0.06 }}
                   >
                     {/* Category header - collapsible */}
                     <button
@@ -447,7 +444,7 @@ export function ProductsList({ categories, products }: ProductsListProps) {
                         </motion.div>
                       )}
                     </AnimatePresence>
-                  </motion.section>
+                  </section>
                 );
               })}
             </div>

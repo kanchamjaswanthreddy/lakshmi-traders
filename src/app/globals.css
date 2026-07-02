@@ -325,6 +325,7 @@
 /* Rubber banding / overscroll */
 html, body {
   overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Monospace for prices */
@@ -334,11 +335,20 @@ html, body {
   letter-spacing: -0.5px;
 }
 
-/* PWA standalone: extra bottom padding for main content behind tab bar */
+/* PWA standalone mode: safe-area adjustments */
 @media (display-mode: standalone) {
-  .pwa-main-pad {
-    padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 100px) !important;
+  body {
+    padding-top: env(safe-area-inset-top, 0px);
   }
+
+  .pwa-main-pad {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 80px) !important;
+  }
+}
+
+/* Safe area bottom padding for bottom sheets */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 /* Skeleton shimmer animation */

@@ -62,24 +62,13 @@ export default function SignupPage() {
   };
 
   return (
-    <main className="bg-mesh flex min-h-dvh items-center justify-center bg-background px-6">
+    <main className="bg-mesh flex min-h-dvh items-center justify-center overflow-y-auto bg-background px-6 py-12">
       <motion.div
         initial={{ opacity: 0, y: 24, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={SPRING}
         className="w-full max-w-sm"
       >
-        <motion.div
-          animate={{ y: [0, -6, 0] }}
-          transition={{
-            type: "spring" as const,
-            stiffness: 40,
-            damping: 12,
-            repeat: Infinity,
-            repeatType: "reverse" as const,
-            duration: 4,
-          }}
-        >
           <div className="card-glow relative overflow-hidden rounded-[20px] bg-card backdrop-blur-xl">
             <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-copper to-transparent opacity-60" />
 
@@ -317,7 +306,6 @@ export default function SignupPage() {
               </motion.p>
             </div>
           </div>
-        </motion.div>
       </motion.div>
     </main>
   );
