@@ -378,10 +378,6 @@ function PriceHeaders() {
 }
 
 function ProductRow({ product, category, isLast }: { product: Product; category?: Category | null; isLast: boolean }) {
-  const buyingPrice = product.master_price;
-  const wholesalePrice = product.wholesale_price ?? buyingPrice;
-  const retailPrice = product.shop_price ?? buyingPrice;
-
   return (
     <div className={`flex items-center px-4 py-3 ${!isLast ? "border-b border-border/30" : ""}`}>
       <div className="min-w-0 flex-1">
@@ -391,13 +387,13 @@ function ProductRow({ product, category, isLast }: { product: Product; category?
         )}
       </div>
       <span className="price-mono w-[60px] text-right text-[11px] font-medium text-muted-foreground/50">
-        {formatPrice(buyingPrice)}
+        {formatPrice(product.master_price)}
       </span>
       <span className="price-mono w-[60px] text-right text-[13px] font-semibold text-foreground/80">
-        {formatPrice(wholesalePrice)}
+        {product.wholesale_price != null ? formatPrice(product.wholesale_price) : "—"}
       </span>
       <span className="price-mono w-[64px] text-right text-[14px] font-bold text-foreground">
-        {formatPrice(retailPrice)}
+        {product.shop_price != null ? formatPrice(product.shop_price) : "—"}
       </span>
     </div>
   );
