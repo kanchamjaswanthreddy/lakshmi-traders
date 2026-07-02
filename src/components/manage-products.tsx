@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   ArrowLeft,
   ArrowRightLeft,
@@ -15,6 +15,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
+import { BottomSheet } from "@/components/bottom-sheet";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/components/auth-provider";
@@ -617,340 +618,220 @@ export function ManageProducts({
       )}
 
       {/* Add Product Bottom Sheet */}
-      <AnimatePresence>
-        {showAddSheet && (
-          <>
-            <motion.div
-              key="add-overlay"
-              variants={OVERLAY_VARIANTS}
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-[60] bg-black/40"
-              onClick={() => setShowAddSheet(false)}
+      <BottomSheet open={showAddSheet} onClose={() => setShowAddSheet(false)} title="Add Product">
+        <div className="space-y-4">
+          <div className="ios-group card-glow rounded-xl px-4 py-3">
+            <label className="block text-[13px] font-medium text-muted-foreground">
+              Product Name
+            </label>
+            <input
+              type="text"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              placeholder="e.g. Asian Paints Tractor Emulsion"
+              className="mt-1 w-full border-none bg-transparent text-[17px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
+              autoFocus
             />
-            <motion.div
-              key="add-sheet"
-              variants={SHEET_VARIANTS}
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              transition={{ ...SPRING, stiffness: 400 }}
-              className="fixed inset-x-0 bottom-0 z-[60] overflow-y-auto rounded-t-[28px] bg-background"
-              style={{ maxHeight: "90dvh", paddingBottom: "calc(env(safe-area-inset-bottom, 20px) + 20px)", backdropFilter: "blur(40px) saturate(200%)", WebkitBackdropFilter: "blur(40px) saturate(200%)" }}
-            >
-              <div className="mx-auto mt-2 h-1.5 w-10 rounded-full bg-muted-foreground/30" />
+          </div>
 
-              <div className="px-5 pt-4 pb-4">
-                <div className="mb-5 flex items-center justify-between">
-                  <h2 className="text-xl font-bold text-foreground">
-                    Add Product
-                  </h2>
-                  <button
-                    onClick={() => setShowAddSheet(false)}
-                    className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary transition-transform active:scale-95"
-                    aria-label="Close"
-                  >
-                    <X
-                      size={16}
-                      className="text-muted-foreground"
-                      strokeWidth={2.5}
-                    />
-                  </button>
-                </div>
+          <div className="ios-group card-glow rounded-xl px-4 py-3">
+            <label className="block text-[13px] font-medium text-muted-foreground">
+              Unit
+            </label>
+            <input
+              type="text"
+              value={newUnit}
+              onChange={(e) => setNewUnit(e.target.value)}
+              placeholder="e.g. pc, mtr, kg, packet"
+              className="mt-1 w-full border-none bg-transparent text-[17px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
+            />
+          </div>
 
-                <div className="space-y-4">
-                  <div className="ios-group card-glow rounded-xl px-4 py-3">
-                    <label className="block text-[13px] font-medium text-muted-foreground">
-                      Product Name
-                    </label>
-                    <input
-                      type="text"
-                      value={newName}
-                      onChange={(e) => setNewName(e.target.value)}
-                      placeholder="e.g. Asian Paints Tractor Emulsion"
-                      className="mt-1 w-full border-none bg-transparent text-[17px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
-                      autoFocus
-                    />
-                  </div>
+          <div className="flex gap-3">
+            <div className="ios-group card-glow flex-1 rounded-xl px-4 py-3">
+              <label className="block text-[13px] font-medium text-muted-foreground">
+                MRP (Master Price)
+              </label>
+              <input
+                type="number"
+                inputMode="decimal"
+                min={0}
+                step="0.01"
+                value={newMasterPrice}
+                onChange={(e) => setNewMasterPrice(e.target.value)}
+                placeholder="0.00"
+                className="mt-1 w-full border-none bg-transparent text-[17px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none price-mono"
+              />
+            </div>
 
-                  <div className="ios-group card-glow rounded-xl px-4 py-3">
-                    <label className="block text-[13px] font-medium text-muted-foreground">
-                      Unit
-                    </label>
-                    <input
-                      type="text"
-                      value={newUnit}
-                      onChange={(e) => setNewUnit(e.target.value)}
-                      placeholder="e.g. pc, mtr, kg, packet"
-                      className="mt-1 w-full border-none bg-transparent text-[17px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
-                    />
-                  </div>
+            <div className="ios-group card-glow flex-1 rounded-xl px-4 py-3">
+              <label className="block text-[13px] font-medium text-muted-foreground">
+                Shop Price
+              </label>
+              <input
+                type="number"
+                inputMode="decimal"
+                min={0}
+                step="0.01"
+                value={newShopPrice}
+                onChange={(e) => setNewShopPrice(e.target.value)}
+                placeholder="Optional"
+                className="mt-1 w-full border-none bg-transparent text-[17px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none price-mono"
+              />
+            </div>
+          </div>
 
-                  <div className="flex gap-3">
-                    <div className="ios-group card-glow flex-1 rounded-xl px-4 py-3">
-                      <label className="block text-[13px] font-medium text-muted-foreground">
-                        MRP (Master Price)
-                      </label>
-                      <input
-                        type="number"
-                        inputMode="decimal"
-                        min={0}
-                        step="0.01"
-                        value={newMasterPrice}
-                        onChange={(e) => setNewMasterPrice(e.target.value)}
-                        placeholder="0.00"
-                        className="mt-1 w-full border-none bg-transparent text-[17px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none price-mono"
-                      />
-                    </div>
+          <div className="ios-group card-glow relative rounded-xl px-4 py-3">
+            <label className="block text-[13px] font-medium text-muted-foreground">
+              Category
+            </label>
+            <div className="relative mt-1">
+              <select
+                value={newCategoryId}
+                onChange={(e) => {
+                  setNewCategoryId(e.target.value);
+                  setNewSubcategoryId("");
+                }}
+                className="w-full appearance-none border-none bg-transparent pr-8 text-[17px] font-medium text-foreground focus:outline-none"
+              >
+                <option value="">Select category</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown
+                size={16}
+                className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground"
+                strokeWidth={2}
+              />
+            </div>
+          </div>
 
-                    <div className="ios-group card-glow flex-1 rounded-xl px-4 py-3">
-                      <label className="block text-[13px] font-medium text-muted-foreground">
-                        Shop Price
-                      </label>
-                      <input
-                        type="number"
-                        inputMode="decimal"
-                        min={0}
-                        step="0.01"
-                        value={newShopPrice}
-                        onChange={(e) => setNewShopPrice(e.target.value)}
-                        placeholder="Optional"
-                        className="mt-1 w-full border-none bg-transparent text-[17px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none price-mono"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="ios-group card-glow relative rounded-xl px-4 py-3">
-                    <label className="block text-[13px] font-medium text-muted-foreground">
-                      Category
-                    </label>
-                    <div className="relative mt-1">
-                      <select
-                        value={newCategoryId}
-                        onChange={(e) => {
-                          setNewCategoryId(e.target.value);
-                          setNewSubcategoryId("");
-                        }}
-                        className="w-full appearance-none border-none bg-transparent pr-8 text-[17px] font-medium text-foreground focus:outline-none"
-                      >
-                        <option value="">Select category</option>
-                        {categories.map((cat) => (
-                          <option key={cat.id} value={cat.id}>
-                            {cat.name}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDown
-                        size={16}
-                        className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground"
-                        strokeWidth={2}
-                      />
-                    </div>
-                  </div>
-
-                  {filteredSubcategories.length > 0 && (
-                    <div className="ios-group card-glow relative rounded-xl px-4 py-3">
-                      <label className="block text-[13px] font-medium text-muted-foreground">
-                        Subcategory
-                      </label>
-                      <div className="relative mt-1">
-                        <select
-                          value={newSubcategoryId}
-                          onChange={(e) => setNewSubcategoryId(e.target.value)}
-                          className="w-full appearance-none border-none bg-transparent pr-8 text-[17px] font-medium text-foreground focus:outline-none"
-                        >
-                          <option value="">No subcategory</option>
-                          {filteredSubcategories.map((sub) => (
-                            <option key={sub.id} value={sub.id}>
-                              {sub.name}
-                            </option>
-                          ))}
-                        </select>
-                        <ChevronDown
-                          size={16}
-                          className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground"
-                          strokeWidth={2}
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  <button
-                    onClick={handleAddProduct}
-                    disabled={!newName.trim() || saving}
-                    className="w-full rounded-2xl bg-gradient-to-r from-[#1D1D1F] to-[#3A3A3C] py-3.5 text-[17px] font-semibold text-white transition-transform duration-150 active:scale-[0.97] disabled:opacity-50"
-                  >
-                    {saving ? "Adding..." : "Add Product"}
-                  </button>
-                </div>
+          {filteredSubcategories.length > 0 && (
+            <div className="ios-group card-glow relative rounded-xl px-4 py-3">
+              <label className="block text-[13px] font-medium text-muted-foreground">
+                Subcategory
+              </label>
+              <div className="relative mt-1">
+                <select
+                  value={newSubcategoryId}
+                  onChange={(e) => setNewSubcategoryId(e.target.value)}
+                  className="w-full appearance-none border-none bg-transparent pr-8 text-[17px] font-medium text-foreground focus:outline-none"
+                >
+                  <option value="">No subcategory</option>
+                  {filteredSubcategories.map((sub) => (
+                    <option key={sub.id} value={sub.id}>
+                      {sub.name}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown
+                  size={16}
+                  className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  strokeWidth={2}
+                />
               </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+            </div>
+          )}
+
+          <button
+            onClick={handleAddProduct}
+            disabled={!newName.trim() || saving}
+            className="w-full rounded-2xl bg-gradient-to-r from-[#1D1D1F] to-[#3A3A3C] py-3.5 text-[17px] font-semibold text-white transition-transform duration-150 active:scale-[0.97] disabled:opacity-50"
+          >
+            {saving ? "Adding..." : "Add Product"}
+          </button>
+        </div>
+      </BottomSheet>
 
       {/* Delete Confirmation Bottom Sheet */}
-      <AnimatePresence>
-        {deleteTarget && (
-          <>
-            <motion.div
-              key="delete-overlay"
-              variants={OVERLAY_VARIANTS}
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-[60] bg-black/40"
-              onClick={() => setDeleteTarget(null)}
-            />
-            <motion.div
-              key="delete-sheet"
-              variants={SHEET_VARIANTS}
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              transition={{ ...SPRING, stiffness: 400 }}
-              className="fixed inset-x-0 bottom-0 z-[60] rounded-t-[28px] bg-background"
-              style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 20px) + 20px)", backdropFilter: "blur(40px) saturate(200%)", WebkitBackdropFilter: "blur(40px) saturate(200%)" }}
-            >
-              <div className="mx-auto mt-2 h-1.5 w-10 rounded-full bg-muted-foreground/30" />
+      <BottomSheet open={!!deleteTarget} onClose={() => setDeleteTarget(null)} title="Delete Product">
+        <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
+          Are you sure you want to delete{" "}
+          <span className="font-semibold text-foreground">
+            {deleteTarget?.name}
+          </span>
+          ? This action cannot be undone.
+        </p>
 
-              <div className="px-5 pt-4 pb-4">
-                <h2 className="text-xl font-bold text-foreground">
-                  Delete Product
-                </h2>
-                <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
-                  Are you sure you want to delete{" "}
-                  <span className="font-semibold text-foreground">
-                    {deleteTarget.name}
-                  </span>
-                  ? This action cannot be undone.
-                </p>
-
-                <div className="mt-5 flex gap-3">
-                  <button
-                    onClick={() => setDeleteTarget(null)}
-                    className="flex-1 rounded-2xl bg-secondary py-3.5 text-[17px] font-semibold text-foreground transition-all active:scale-95"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleDelete}
-                    disabled={saving}
-                    className="flex-1 rounded-2xl bg-destructive py-3.5 text-[17px] font-semibold text-white transition-all active:scale-95 disabled:opacity-50"
-                  >
-                    {saving ? "Deleting..." : "Delete"}
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+        <div className="mt-5 flex gap-3">
+          <button
+            onClick={() => setDeleteTarget(null)}
+            className="flex-1 rounded-2xl bg-secondary py-3.5 text-[17px] font-semibold text-foreground transition-all active:scale-95"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleDelete}
+            disabled={saving}
+            className="flex-1 rounded-2xl bg-destructive py-3.5 text-[17px] font-semibold text-white transition-all active:scale-95 disabled:opacity-50"
+          >
+            {saving ? "Deleting..." : "Delete"}
+          </button>
+        </div>
+      </BottomSheet>
 
       {/* Move Product Bottom Sheet */}
-      <AnimatePresence>
-        {moveTarget && (
-          <>
-            <motion.div
-              key="move-overlay"
-              variants={OVERLAY_VARIANTS}
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-[60] bg-black/40"
-              onClick={() => setMoveTarget(null)}
-            />
-            <motion.div
-              key="move-sheet"
-              variants={SHEET_VARIANTS}
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              transition={{ ...SPRING, stiffness: 400 }}
-              className="fixed inset-x-0 bottom-0 z-[60] overflow-y-auto rounded-t-[28px] bg-background"
-              style={{ maxHeight: "80dvh", paddingBottom: "calc(env(safe-area-inset-bottom, 20px) + 20px)", backdropFilter: "blur(40px) saturate(200%)", WebkitBackdropFilter: "blur(40px) saturate(200%)" }}
-            >
-              <div className="mx-auto mt-2 h-1.5 w-10 rounded-full bg-muted-foreground/30" />
+      <BottomSheet open={!!moveTarget} onClose={() => setMoveTarget(null)} title="Move Product">
+        <p className="mb-4 text-[14px] text-muted-foreground">
+          Moving <span className="font-semibold text-foreground">{moveTarget?.name}</span>
+        </p>
 
-              <div className="px-5 pt-4 pb-4">
-                <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-xl font-bold text-foreground">
-                    Move Product
-                  </h2>
-                  <button
-                    onClick={() => setMoveTarget(null)}
-                    className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary transition-transform active:scale-95"
-                    aria-label="Close"
-                  >
-                    <X size={16} className="text-muted-foreground" strokeWidth={2.5} />
-                  </button>
-                </div>
+        <div className="space-y-3">
+          <div className="ios-group card-glow relative rounded-xl px-4 py-3">
+            <label className="block text-[13px] font-medium text-muted-foreground">
+              Category
+            </label>
+            <div className="relative mt-1">
+              <select
+                value={moveCategoryId}
+                onChange={(e) => {
+                  setMoveCategoryId(e.target.value);
+                  setMoveSubcategoryId("");
+                }}
+                className="w-full appearance-none border-none bg-transparent pr-8 text-[17px] font-medium text-foreground focus:outline-none"
+              >
+                <option value="">No category</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </select>
+              <ChevronDown size={16} className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground" strokeWidth={2} />
+            </div>
+          </div>
 
-                <p className="mb-4 text-[14px] text-muted-foreground">
-                  Moving <span className="font-semibold text-foreground">{moveTarget.name}</span>
-                </p>
-
-                <div className="space-y-3">
-                  <div className="ios-group card-glow relative rounded-xl px-4 py-3">
-                    <label className="block text-[13px] font-medium text-muted-foreground">
-                      Category
-                    </label>
-                    <div className="relative mt-1">
-                      <select
-                        value={moveCategoryId}
-                        onChange={(e) => {
-                          setMoveCategoryId(e.target.value);
-                          setMoveSubcategoryId("");
-                        }}
-                        className="w-full appearance-none border-none bg-transparent pr-8 text-[17px] font-medium text-foreground focus:outline-none"
-                      >
-                        <option value="">No category</option>
-                        {categories.map((cat) => (
-                          <option key={cat.id} value={cat.id}>{cat.name}</option>
-                        ))}
-                      </select>
-                      <ChevronDown size={16} className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground" strokeWidth={2} />
-                    </div>
-                  </div>
-
-                  {moveSubsFiltered.length > 0 && (
-                    <div className="ios-group card-glow relative rounded-xl px-4 py-3">
-                      <label className="block text-[13px] font-medium text-muted-foreground">
-                        Subcategory
-                      </label>
-                      <div className="relative mt-1">
-                        <select
-                          value={moveSubcategoryId}
-                          onChange={(e) => setMoveSubcategoryId(e.target.value)}
-                          className="w-full appearance-none border-none bg-transparent pr-8 text-[17px] font-medium text-foreground focus:outline-none"
-                        >
-                          <option value="">No subcategory</option>
-                          {moveSubsFiltered.map((sub) => (
-                            <option key={sub.id} value={sub.id}>{sub.name}</option>
-                          ))}
-                        </select>
-                        <ChevronDown size={16} className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground" strokeWidth={2} />
-                      </div>
-                    </div>
-                  )}
-
-                  <button
-                    onClick={handleMove}
-                    disabled={saving}
-                    className="w-full rounded-2xl bg-gradient-to-r from-[#1D1D1F] to-[#3A3A3C] py-3.5 text-[17px] font-semibold text-white transition-transform duration-150 active:scale-[0.97] disabled:opacity-50"
-                  >
-                    {saving ? "Moving..." : "Move Product"}
-                  </button>
-                </div>
+          {moveSubsFiltered.length > 0 && (
+            <div className="ios-group card-glow relative rounded-xl px-4 py-3">
+              <label className="block text-[13px] font-medium text-muted-foreground">
+                Subcategory
+              </label>
+              <div className="relative mt-1">
+                <select
+                  value={moveSubcategoryId}
+                  onChange={(e) => setMoveSubcategoryId(e.target.value)}
+                  className="w-full appearance-none border-none bg-transparent pr-8 text-[17px] font-medium text-foreground focus:outline-none"
+                >
+                  <option value="">No subcategory</option>
+                  {moveSubsFiltered.map((sub) => (
+                    <option key={sub.id} value={sub.id}>{sub.name}</option>
+                  ))}
+                </select>
+                <ChevronDown size={16} className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground" strokeWidth={2} />
               </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+            </div>
+          )}
+
+          <button
+            onClick={handleMove}
+            disabled={saving}
+            className="w-full rounded-2xl bg-gradient-to-r from-[#1D1D1F] to-[#3A3A3C] py-3.5 text-[17px] font-semibold text-white transition-transform duration-150 active:scale-[0.97] disabled:opacity-50"
+          >
+            {saving ? "Moving..." : "Move Product"}
+          </button>
+        </div>
+      </BottomSheet>
     </div>
   );
 }

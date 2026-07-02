@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   ArrowLeft,
   Plus,
@@ -12,6 +12,7 @@ import {
   Pencil,
   FolderOpen,
 } from "lucide-react";
+import { BottomSheet } from "@/components/bottom-sheet";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/components/auth-provider";
@@ -363,230 +364,156 @@ export function ManageCategories({ initialCategories }: ManageCategoriesProps) {
       )}
 
       {/* Add Category Bottom Sheet */}
-      <AnimatePresence>
-        {showAddSheet && (
-          <>
-            <motion.div
-              key="add-overlay"
-              variants={OVERLAY_VARIANTS}
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-[60] bg-black/40"
-              onClick={() => setShowAddSheet(false)}
+      <BottomSheet open={showAddSheet} onClose={() => setShowAddSheet(false)} title="Add Category">
+        <div className="space-y-4">
+          <div className="ios-group card-glow rounded-xl px-4 py-3">
+            <label className="block text-[13px] font-medium text-muted-foreground">
+              Category Name
+            </label>
+            <input
+              type="text"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              placeholder="e.g. Paints"
+              className="mt-1 w-full border-none bg-transparent text-[17px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
+              autoFocus
             />
-            <motion.div
-              key="add-sheet"
-              variants={SHEET_VARIANTS}
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              transition={{ ...SPRING, stiffness: 400 }}
-              className="fixed inset-x-0 bottom-0 z-[60] overflow-y-auto rounded-t-[28px] bg-background"
-              style={{ maxHeight: "90dvh", paddingBottom: "calc(env(safe-area-inset-bottom, 20px) + 20px)", backdropFilter: "blur(40px) saturate(200%)", WebkitBackdropFilter: "blur(40px) saturate(200%)" }}
-            >
-              <div className="mx-auto mt-2 h-1.5 w-10 rounded-full bg-muted-foreground/30" />
+          </div>
 
-              <div className="px-5 pt-4 pb-4">
-                <div className="mb-5 flex items-center justify-between">
-                  <h2 className="text-xl font-bold text-foreground">
-                    Add Category
-                  </h2>
-                  <button
-                    onClick={() => setShowAddSheet(false)}
-                    className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary transition-transform active:scale-95"
-                    aria-label="Close"
+          <div className="ios-group card-glow rounded-xl px-4 py-3">
+            <label className="block text-[13px] font-medium text-muted-foreground">
+              Description (optional)
+            </label>
+            <input
+              type="text"
+              value={newDescription}
+              onChange={(e) => setNewDescription(e.target.value)}
+              placeholder="Brief description"
+              className="mt-1 w-full border-none bg-transparent text-[17px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
+            />
+          </div>
+
+          <div className="flex gap-3">
+            <div className="ios-group card-glow flex-1 rounded-xl px-4 py-3">
+              <label className="block text-[13px] font-medium text-muted-foreground">
+                Regular Discount %
+              </label>
+              <input
+                type="number"
+                inputMode="decimal"
+                min={0}
+                max={100}
+                step="0.5"
+                value={newRegularDiscount}
+                onChange={(e) => setNewRegularDiscount(e.target.value)}
+                placeholder="0"
+                className="mt-1 w-full border-none bg-transparent text-[17px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none price-mono"
+              />
+            </div>
+
+            <div className="ios-group card-glow flex-1 rounded-xl px-4 py-3">
+              <label className="block text-[13px] font-medium text-muted-foreground">
+                Shop Owner Discount %
+              </label>
+              <input
+                type="number"
+                inputMode="decimal"
+                min={0}
+                max={100}
+                step="0.5"
+                value={newShopOwnerDiscount}
+                onChange={(e) => setNewShopOwnerDiscount(e.target.value)}
+                placeholder="0"
+                className="mt-1 w-full border-none bg-transparent text-[17px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none price-mono"
+              />
+            </div>
+          </div>
+
+          {/* Subcategories */}
+          <div className="ios-group card-glow rounded-xl px-4 py-3">
+            <label className="block text-[13px] font-medium text-muted-foreground">
+              Subcategories (optional)
+            </label>
+            <div className="mt-1 flex gap-2">
+              <input
+                type="text"
+                value={subInput}
+                onChange={(e) => setSubInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    addSubToList();
+                  }
+                }}
+                placeholder="e.g. 16mm, 20mm, Local"
+                className="flex-1 border-none bg-transparent text-[16px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
+              />
+              <button
+                type="button"
+                onClick={addSubToList}
+                disabled={!subInput.trim()}
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-foreground text-background transition-transform active:scale-95 disabled:opacity-30"
+              >
+                <Plus size={16} strokeWidth={2.5} />
+              </button>
+            </div>
+            {newSubcategories.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {newSubcategories.map((sub) => (
+                  <span
+                    key={sub}
+                    className="inline-flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-[13px] font-medium text-foreground"
                   >
-                    <X size={16} className="text-muted-foreground" strokeWidth={2.5} />
-                  </button>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="ios-group card-glow rounded-xl px-4 py-3">
-                    <label className="block text-[13px] font-medium text-muted-foreground">
-                      Category Name
-                    </label>
-                    <input
-                      type="text"
-                      value={newName}
-                      onChange={(e) => setNewName(e.target.value)}
-                      placeholder="e.g. Paints"
-                      className="mt-1 w-full border-none bg-transparent text-[17px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
-                      autoFocus
-                    />
-                  </div>
-
-                  <div className="ios-group card-glow rounded-xl px-4 py-3">
-                    <label className="block text-[13px] font-medium text-muted-foreground">
-                      Description (optional)
-                    </label>
-                    <input
-                      type="text"
-                      value={newDescription}
-                      onChange={(e) => setNewDescription(e.target.value)}
-                      placeholder="Brief description"
-                      className="mt-1 w-full border-none bg-transparent text-[17px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
-                    />
-                  </div>
-
-                  <div className="flex gap-3">
-                    <div className="ios-group card-glow flex-1 rounded-xl px-4 py-3">
-                      <label className="block text-[13px] font-medium text-muted-foreground">
-                        Regular Discount %
-                      </label>
-                      <input
-                        type="number"
-                        inputMode="decimal"
-                        min={0}
-                        max={100}
-                        step="0.5"
-                        value={newRegularDiscount}
-                        onChange={(e) => setNewRegularDiscount(e.target.value)}
-                        placeholder="0"
-                        className="mt-1 w-full border-none bg-transparent text-[17px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none price-mono"
-                      />
-                    </div>
-
-                    <div className="ios-group card-glow flex-1 rounded-xl px-4 py-3">
-                      <label className="block text-[13px] font-medium text-muted-foreground">
-                        Shop Owner Discount %
-                      </label>
-                      <input
-                        type="number"
-                        inputMode="decimal"
-                        min={0}
-                        max={100}
-                        step="0.5"
-                        value={newShopOwnerDiscount}
-                        onChange={(e) => setNewShopOwnerDiscount(e.target.value)}
-                        placeholder="0"
-                        className="mt-1 w-full border-none bg-transparent text-[17px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none price-mono"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Subcategories */}
-                  <div className="ios-group card-glow rounded-xl px-4 py-3">
-                    <label className="block text-[13px] font-medium text-muted-foreground">
-                      Subcategories (optional)
-                    </label>
-                    <div className="mt-1 flex gap-2">
-                      <input
-                        type="text"
-                        value={subInput}
-                        onChange={(e) => setSubInput(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            addSubToList();
-                          }
-                        }}
-                        placeholder="e.g. 16mm, 20mm, Local"
-                        className="flex-1 border-none bg-transparent text-[16px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
-                      />
-                      <button
-                        type="button"
-                        onClick={addSubToList}
-                        disabled={!subInput.trim()}
-                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-foreground text-background transition-transform active:scale-95 disabled:opacity-30"
-                      >
-                        <Plus size={16} strokeWidth={2.5} />
-                      </button>
-                    </div>
-                    {newSubcategories.length > 0 && (
-                      <div className="mt-2 flex flex-wrap gap-1.5">
-                        {newSubcategories.map((sub) => (
-                          <span
-                            key={sub}
-                            className="inline-flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-[13px] font-medium text-foreground"
-                          >
-                            {sub}
-                            <button
-                              type="button"
-                              onClick={() => removeSubFromList(sub)}
-                              className="ml-0.5 rounded-full active:scale-90"
-                            >
-                              <X size={12} strokeWidth={2.5} className="text-muted-foreground" />
-                            </button>
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  <button
-                    onClick={handleAddCategory}
-                    disabled={!newName.trim() || saving}
-                    className="w-full rounded-2xl bg-gradient-to-r from-[#1D1D1F] to-[#3A3A3C] py-3.5 text-[17px] font-semibold text-white transition-transform duration-150 active:scale-[0.97] disabled:opacity-50"
-                  >
-                    {saving ? "Adding..." : "Add Category"}
-                  </button>
-                </div>
+                    {sub}
+                    <button
+                      type="button"
+                      onClick={() => removeSubFromList(sub)}
+                      className="ml-0.5 rounded-full active:scale-90"
+                    >
+                      <X size={12} strokeWidth={2.5} className="text-muted-foreground" />
+                    </button>
+                  </span>
+                ))}
               </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+            )}
+          </div>
+
+          <button
+            onClick={handleAddCategory}
+            disabled={!newName.trim() || saving}
+            className="w-full rounded-2xl bg-gradient-to-r from-[#1D1D1F] to-[#3A3A3C] py-3.5 text-[17px] font-semibold text-white transition-transform duration-150 active:scale-[0.97] disabled:opacity-50"
+          >
+            {saving ? "Adding..." : "Add Category"}
+          </button>
+        </div>
+      </BottomSheet>
 
       {/* Delete Confirmation Bottom Sheet */}
-      <AnimatePresence>
-        {deleteTarget && (
-          <>
-            <motion.div
-              key="delete-overlay"
-              variants={OVERLAY_VARIANTS}
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-[60] bg-black/40"
-              onClick={() => setDeleteTarget(null)}
-            />
-            <motion.div
-              key="delete-sheet"
-              variants={SHEET_VARIANTS}
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              transition={{ ...SPRING, stiffness: 400 }}
-              className="fixed inset-x-0 bottom-0 z-[60] overflow-y-auto rounded-t-[28px] bg-background"
-              style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 20px) + 20px)", backdropFilter: "blur(40px) saturate(200%)", WebkitBackdropFilter: "blur(40px) saturate(200%)" }}
-            >
-              <div className="mx-auto mt-2 h-1.5 w-10 rounded-full bg-muted-foreground/30" />
+      <BottomSheet open={!!deleteTarget} onClose={() => setDeleteTarget(null)} title="Delete Category">
+        <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
+          Are you sure you want to delete{" "}
+          <span className="font-semibold text-foreground">
+            {deleteTarget?.name}
+          </span>
+          ? Products in this category will become uncategorized.
+        </p>
 
-              <div className="px-5 pt-4 pb-6">
-                <h2 className="text-xl font-bold text-foreground">
-                  Delete Category
-                </h2>
-                <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
-                  Are you sure you want to delete{" "}
-                  <span className="font-semibold text-foreground">
-                    {deleteTarget.name}
-                  </span>
-                  ? Products in this category will become uncategorized.
-                </p>
-
-                <div className="mt-5 flex gap-3">
-                  <button
-                    onClick={() => setDeleteTarget(null)}
-                    className="flex-1 rounded-2xl bg-secondary py-3.5 text-[17px] font-semibold text-foreground transition-all active:scale-95"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleDelete}
-                    disabled={saving}
-                    className="flex-1 rounded-2xl bg-destructive py-3.5 text-[17px] font-semibold text-white transition-all active:scale-95 disabled:opacity-50"
-                  >
-                    {saving ? "Deleting..." : "Delete"}
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+        <div className="mt-5 flex gap-3">
+          <button
+            onClick={() => setDeleteTarget(null)}
+            className="flex-1 rounded-2xl bg-secondary py-3.5 text-[17px] font-semibold text-foreground transition-all active:scale-95"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleDelete}
+            disabled={saving}
+            className="flex-1 rounded-2xl bg-destructive py-3.5 text-[17px] font-semibold text-white transition-all active:scale-95 disabled:opacity-50"
+          >
+            {saving ? "Deleting..." : "Delete"}
+          </button>
+        </div>
+      </BottomSheet>
     </div>
   );
 }

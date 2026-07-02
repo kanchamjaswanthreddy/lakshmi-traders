@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Trash2, X } from "lucide-react";
+import { motion } from "framer-motion";
+import { Plus, Trash2 } from "lucide-react";
+import { BottomSheet } from "@/components/bottom-sheet";
 import { useAuth } from "@/components/auth-provider";
 import { createClient } from "@/lib/supabase/client";
 
@@ -197,100 +198,62 @@ export function ManageSubcategories({
       ))}
 
       {/* Bottom Sheet */}
-      <AnimatePresence>
-        {showSheet && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={SPRING}
-              className="fixed inset-0 z-[60] bg-black/40"
-              onClick={() => setShowSheet(false)}
-            />
-            <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ type: "spring", stiffness: 300, damping: 32 }}
-              className="fixed inset-x-0 bottom-0 z-[60] overflow-y-auto rounded-t-[20px] bg-card backdrop-blur-xl"
+      <BottomSheet open={showSheet} onClose={() => setShowSheet(false)} title="Add Subcategory">
+        <div className="space-y-4">
+          <div>
+            <label
+              htmlFor="subcatName"
+              className="mb-1.5 block text-[13px] font-medium text-muted-foreground"
+            >
+              Name
+            </label>
+            <input
+              id="subcatName"
+              type="text"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              className="w-full rounded-2xl bg-secondary px-4 py-3.5 text-[16px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-copper/40"
               style={{
-                paddingBottom: "calc(env(safe-area-inset-bottom, 20px) + 20px)",
-                boxShadow: "0 -8px 32px rgba(0,0,0,0.12)",
+                boxShadow: "inset 0 1px 3px rgba(0,0,0,0.06)",
+              }}
+              placeholder="Subcategory name"
+              autoFocus
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="parentCategory"
+              className="mb-1.5 block text-[13px] font-medium text-muted-foreground"
+            >
+              Parent Category
+            </label>
+            <select
+              id="parentCategory"
+              value={selectedCategoryId}
+              onChange={(e) => setSelectedCategoryId(e.target.value)}
+              className="w-full appearance-none rounded-2xl bg-secondary px-4 py-3.5 text-[16px] text-foreground focus:outline-none focus:ring-2 focus:ring-copper/40"
+              style={{
+                boxShadow: "inset 0 1px 3px rgba(0,0,0,0.06)",
               }}
             >
-              <div className="px-6 pt-4 pb-8">
-                <div className="mb-6 flex items-center justify-between">
-                  <h3 className="text-[20px] font-bold text-foreground">
-                    Add Subcategory
-                  </h3>
-                  <button
-                    onClick={() => setShowSheet(false)}
-                    className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary transition-transform active:scale-95"
-                  >
-                    <X size={16} strokeWidth={2.5} className="text-foreground" />
-                  </button>
-                </div>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-                <div className="space-y-4">
-                  <div>
-                    <label
-                      htmlFor="subcatName"
-                      className="mb-1.5 block text-[13px] font-medium text-muted-foreground"
-                    >
-                      Name
-                    </label>
-                    <input
-                      id="subcatName"
-                      type="text"
-                      value={newName}
-                      onChange={(e) => setNewName(e.target.value)}
-                      className="w-full rounded-2xl bg-secondary px-4 py-3.5 text-[16px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-copper/40"
-                      style={{
-                        boxShadow: "inset 0 1px 3px rgba(0,0,0,0.06)",
-                      }}
-                      placeholder="Subcategory name"
-                      autoFocus
-                    />
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="parentCategory"
-                      className="mb-1.5 block text-[13px] font-medium text-muted-foreground"
-                    >
-                      Parent Category
-                    </label>
-                    <select
-                      id="parentCategory"
-                      value={selectedCategoryId}
-                      onChange={(e) => setSelectedCategoryId(e.target.value)}
-                      className="w-full appearance-none rounded-2xl bg-secondary px-4 py-3.5 text-[16px] text-foreground focus:outline-none focus:ring-2 focus:ring-copper/40"
-                      style={{
-                        boxShadow: "inset 0 1px 3px rgba(0,0,0,0.06)",
-                      }}
-                    >
-                      {categories.map((cat) => (
-                        <option key={cat.id} value={cat.id}>
-                          {cat.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <button
-                    onClick={handleAdd}
-                    disabled={submitting || !newName.trim()}
-                    className="w-full rounded-2xl bg-gradient-to-r from-[#1D1D1F] to-[#3A3A3C] py-3.5 text-[17px] font-semibold text-white transition-transform active:scale-95 disabled:opacity-50"
-                  >
-                    {submitting ? "Adding..." : "Add Subcategory"}
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+          <button
+            onClick={handleAdd}
+            disabled={submitting || !newName.trim()}
+            className="w-full rounded-2xl bg-gradient-to-r from-[#1D1D1F] to-[#3A3A3C] py-3.5 text-[17px] font-semibold text-white transition-transform active:scale-95 disabled:opacity-50"
+          >
+            {submitting ? "Adding..." : "Add Subcategory"}
+          </button>
+        </div>
+      </BottomSheet>
     </div>
   );
 }
