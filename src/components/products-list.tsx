@@ -368,11 +368,11 @@ export function ProductsList({ categories, products, subcategories }: ProductsLi
 
 function PriceHeaders() {
   return (
-    <div className="mb-1.5 flex items-center justify-end gap-2 px-4">
+    <div className="mb-1 flex items-center px-4">
       <div className="flex-1" />
-      <span className="w-[52px] text-center text-[9px] font-bold uppercase tracking-wider text-muted-foreground/40">Buy</span>
-      <span className="w-[56px] text-center text-[9px] font-bold uppercase tracking-wider text-muted-foreground/60">W.Sale</span>
-      <span className="w-[56px] text-center text-[9px] font-bold uppercase tracking-wider text-foreground/70">Retail</span>
+      <span className="w-[60px] text-right text-[9px] font-bold uppercase tracking-wider text-muted-foreground/40">Buy</span>
+      <span className="w-[60px] text-right text-[9px] font-bold uppercase tracking-wider text-muted-foreground/60">W.Sale</span>
+      <span className="w-[64px] text-right text-[9px] font-bold uppercase tracking-wider text-foreground/70">Retail</span>
     </div>
   );
 }
@@ -383,30 +383,22 @@ function ProductRow({ product, category, isLast }: { product: Product; category?
   const retailPrice = product.shop_price ?? buyingPrice;
 
   return (
-    <div className={`flex items-center gap-2 px-4 py-3 ${!isLast ? "border-b border-border/30" : ""}`}>
+    <div className={`flex items-center px-4 py-3 ${!isLast ? "border-b border-border/30" : ""}`}>
       <div className="min-w-0 flex-1">
         <p className="text-[14px] font-medium leading-snug text-foreground">{product.name}</p>
         {product.unit && (
           <p className="mt-0.5 text-[11px] text-muted-foreground">{product.unit}</p>
         )}
       </div>
-      <div className="flex shrink-0 items-baseline gap-2">
-        <div className="text-center">
-          <span className="price-mono block text-[11px] font-medium text-muted-foreground/50">
-            {formatPrice(buyingPrice)}
-          </span>
-        </div>
-        <div className="text-center">
-          <span className="price-mono block text-[13px] font-semibold text-foreground/80">
-            {formatPrice(wholesalePrice)}
-          </span>
-        </div>
-        <div className="text-center">
-          <span className="price-mono block text-[14px] font-bold text-foreground">
-            {formatPrice(retailPrice)}
-          </span>
-        </div>
-      </div>
+      <span className="price-mono w-[60px] text-right text-[11px] font-medium text-muted-foreground/50">
+        {formatPrice(buyingPrice)}
+      </span>
+      <span className="price-mono w-[60px] text-right text-[13px] font-semibold text-foreground/80">
+        {formatPrice(wholesalePrice)}
+      </span>
+      <span className="price-mono w-[64px] text-right text-[14px] font-bold text-foreground">
+        {formatPrice(retailPrice)}
+      </span>
     </div>
   );
 }
