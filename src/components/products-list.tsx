@@ -221,11 +221,14 @@ export function ProductsList({ categories, products, subcategories }: ProductsLi
                 <p className="mt-4 text-[16px] font-medium text-foreground">No products found</p>
               </div>
             ) : (
-              <div className="ios-group card-glow overflow-hidden rounded-2xl">
-                {searchResults.map((p, i) => (
-                  <ProductRow key={p.id} product={p} category={categories.find((c) => c.id === p.category_id)} isLast={i === searchResults.length - 1} />
-                ))}
-              </div>
+              <>
+                <PriceHeaders />
+                <div className="ios-group card-glow overflow-hidden rounded-2xl">
+                  {searchResults.map((p, i) => (
+                    <ProductRow key={p.id} product={p} category={categories.find((c) => c.id === p.category_id)} isLast={i === searchResults.length - 1} />
+                  ))}
+                </div>
+              </>
             )}
           </motion.div>
         )}
@@ -311,7 +314,8 @@ export function ProductsList({ categories, products, subcategories }: ProductsLi
                 <p className="mb-3 text-[12px] font-semibold uppercase tracking-wider text-muted-foreground">
                   {subsForCategory.length > 0 ? "Other Products" : "Products"}
                 </p>
-                <div className="ios-group card-glow overflow-hidden rounded-2xl">
+                <PriceHeaders />
+              <div className="ios-group card-glow overflow-hidden rounded-2xl">
                   {productsForView.map((p, i) => (
                     <ProductRow key={p.id} product={p} category={currentCategory} isLast={i === productsForView.length - 1} />
                   ))}
@@ -338,11 +342,14 @@ export function ProductsList({ categories, products, subcategories }: ProductsLi
               {productsForView.length} product{productsForView.length !== 1 ? "s" : ""}
             </p>
             {productsForView.length > 0 ? (
-              <div className="ios-group card-glow overflow-hidden rounded-2xl">
-                {productsForView.map((p, i) => (
-                  <ProductRow key={p.id} product={p} category={currentCategory} isLast={i === productsForView.length - 1} />
-                ))}
-              </div>
+              <>
+                <PriceHeaders />
+                <div className="ios-group card-glow overflow-hidden rounded-2xl">
+                  {productsForView.map((p, i) => (
+                    <ProductRow key={p.id} product={p} category={currentCategory} isLast={i === productsForView.length - 1} />
+                  ))}
+                </div>
+              </>
             ) : (
               <div className="mt-12 flex flex-col items-center text-center">
                 <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-foreground/5">
@@ -359,29 +366,46 @@ export function ProductsList({ categories, products, subcategories }: ProductsLi
   );
 }
 
+function PriceHeaders() {
+  return (
+    <div className="mb-1.5 flex items-center justify-end gap-2 px-4">
+      <div className="flex-1" />
+      <span className="w-[52px] text-center text-[9px] font-bold uppercase tracking-wider text-muted-foreground/40">Buy</span>
+      <span className="w-[56px] text-center text-[9px] font-bold uppercase tracking-wider text-muted-foreground/60">W.Sale</span>
+      <span className="w-[56px] text-center text-[9px] font-bold uppercase tracking-wider text-foreground/70">Retail</span>
+    </div>
+  );
+}
+
 function ProductRow({ product, category, isLast }: { product: Product; category?: Category | null; isLast: boolean }) {
-  const rPct = category?.regular_discount_pct ?? 0;
-  const sPct = category?.shop_owner_discount_pct ?? 0;
-  const regularPrice = computeRegularPrice(product.master_price, rPct);
-  const shopPrice = product.shop_price ?? computeShopOwnerPrice(product.master_price, sPct);
+  const buyingPrice = product.master_price;
+  const wholesalePrice = product.wholesale_price ?? buyingPrice;
+  const retailPrice = product.shop_price ?? buyingPrice;
 
   return (
-    <div className={`flex items-center gap-3 px-4 py-3.5 ${!isLast ? "border-b border-border/30" : ""}`}>
+    <div className={`flex items-center gap-2 px-4 py-3 ${!isLast ? "border-b border-border/30" : ""}`}>
       <div className="min-w-0 flex-1">
-        <p className="text-[15px] font-medium leading-snug text-foreground">{product.name}</p>
+        <p className="text-[14px] font-medium leading-snug text-foreground">{product.name}</p>
         {product.unit && (
-          <p className="mt-0.5 text-[12px] text-muted-foreground">{product.unit}</p>
+          <p className="mt-0.5 text-[11px] text-muted-foreground">{product.unit}</p>
         )}
       </div>
-      <div className="flex shrink-0 flex-col items-end gap-0.5">
-        <span className="price-mono text-[15px] font-bold text-foreground">
-          {formatPrice(shopPrice)}
-        </span>
-        {product.master_price !== shopPrice && (
-          <span className="price-mono text-[11px] text-muted-foreground/60 line-through">
-            {formatPrice(product.master_price)}
+      <div className="flex shrink-0 items-baseline gap-2">
+        <div className="text-center">
+          <span className="price-mono block text-[11px] font-medium text-muted-foreground/50">
+            {formatPrice(buyingPrice)}
           </span>
-        )}
+        </div>
+        <div className="text-center">
+          <span className="price-mono block text-[13px] font-semibold text-foreground/80">
+            {formatPrice(wholesalePrice)}
+          </span>
+        </div>
+        <div className="text-center">
+          <span className="price-mono block text-[14px] font-bold text-foreground">
+            {formatPrice(retailPrice)}
+          </span>
+        </div>
       </div>
     </div>
   );

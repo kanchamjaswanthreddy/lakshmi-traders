@@ -62,7 +62,7 @@ export default function SignupPage() {
   };
 
   return (
-    <main className="bg-mesh flex min-h-dvh items-center justify-center overflow-y-auto bg-background px-6 py-12">
+    <main className="bg-mesh min-h-dvh overflow-y-auto bg-background px-6 pb-12 pt-[10vh]">
       <motion.div
         initial={{ opacity: 0, y: 24, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}

@@ -14,6 +14,7 @@ export interface Product {
   name: string;
   unit: string | null;
   master_price: number;
+  wholesale_price: number | null;
   shop_price: number | null;
   created_at: string;
   updated_at: string;

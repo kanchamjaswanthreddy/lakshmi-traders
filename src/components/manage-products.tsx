@@ -122,6 +122,7 @@ export function ManageProducts({
   const [newName, setNewName] = useState("");
   const [newUnit, setNewUnit] = useState("");
   const [newMasterPrice, setNewMasterPrice] = useState("");
+  const [newWholesalePrice, setNewWholesalePrice] = useState("");
   const [newShopPrice, setNewShopPrice] = useState("");
   const [newCategoryId, setNewCategoryId] = useState("");
   const [newSubcategoryId, setNewSubcategoryId] = useState("");
@@ -239,6 +240,7 @@ export function ManageProducts({
     if (!trimmedName) return;
 
     const masterPrice = parseFloat(newMasterPrice) || 0;
+    const wholesalePrice = newWholesalePrice ? parseFloat(newWholesalePrice) : null;
     const shopPrice = newShopPrice ? parseFloat(newShopPrice) : null;
 
     setSaving(true);
@@ -247,6 +249,7 @@ export function ManageProducts({
       name: trimmedName,
       unit: newUnit.trim() || null,
       master_price: masterPrice,
+      wholesale_price: wholesalePrice,
       shop_price: shopPrice,
       category_id: newCategoryId || null,
       subcategory_id: newSubcategoryId || null,
@@ -259,6 +262,7 @@ export function ManageProducts({
       setNewName("");
       setNewUnit("");
       setNewMasterPrice("");
+      setNewWholesalePrice("");
       setNewShopPrice("");
       setNewCategoryId("");
       setNewSubcategoryId("");
@@ -647,37 +651,18 @@ export function ManageProducts({
             />
           </div>
 
-          <div className="flex gap-3">
-            <div className="ios-group card-glow flex-1 rounded-xl px-4 py-3">
-              <label className="block text-[13px] font-medium text-muted-foreground">
-                MRP (Master Price)
-              </label>
-              <input
-                type="number"
-                inputMode="decimal"
-                min={0}
-                step="0.01"
-                value={newMasterPrice}
-                onChange={(e) => setNewMasterPrice(e.target.value)}
-                placeholder="0.00"
-                className="mt-1 w-full border-none bg-transparent text-[17px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none price-mono"
-              />
+          <div className="grid grid-cols-3 gap-2">
+            <div className="ios-group card-glow rounded-xl px-3 py-2.5">
+              <label className="block text-[11px] font-medium text-muted-foreground">Buying Price</label>
+              <input type="number" inputMode="decimal" min={0} step="0.01" value={newMasterPrice} onChange={(e) => setNewMasterPrice(e.target.value)} placeholder="0" className="mt-0.5 w-full border-none bg-transparent text-[16px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none price-mono" />
             </div>
-
-            <div className="ios-group card-glow flex-1 rounded-xl px-4 py-3">
-              <label className="block text-[13px] font-medium text-muted-foreground">
-                Shop Price
-              </label>
-              <input
-                type="number"
-                inputMode="decimal"
-                min={0}
-                step="0.01"
-                value={newShopPrice}
-                onChange={(e) => setNewShopPrice(e.target.value)}
-                placeholder="Optional"
-                className="mt-1 w-full border-none bg-transparent text-[17px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none price-mono"
-              />
+            <div className="ios-group card-glow rounded-xl px-3 py-2.5">
+              <label className="block text-[11px] font-medium text-muted-foreground">Wholesale</label>
+              <input type="number" inputMode="decimal" min={0} step="0.01" value={newWholesalePrice} onChange={(e) => setNewWholesalePrice(e.target.value)} placeholder="0" className="mt-0.5 w-full border-none bg-transparent text-[16px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none price-mono" />
+            </div>
+            <div className="ios-group card-glow rounded-xl px-3 py-2.5">
+              <label className="block text-[11px] font-medium text-muted-foreground">Retail</label>
+              <input type="number" inputMode="decimal" min={0} step="0.01" value={newShopPrice} onChange={(e) => setNewShopPrice(e.target.value)} placeholder="0" className="mt-0.5 w-full border-none bg-transparent text-[16px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none price-mono" />
             </div>
           </div>
 
