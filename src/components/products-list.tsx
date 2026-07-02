@@ -387,13 +387,13 @@ function ProductRow({ product, category, isLast }: { product: Product; category?
         )}
       </div>
       <span className="price-mono w-[60px] text-right text-[11px] font-medium text-muted-foreground/50">
-        {formatPrice(product.master_price)}
+        {product.master_price > 0 ? formatPrice(product.master_price) : "—"}
       </span>
       <span className="price-mono w-[60px] text-right text-[13px] font-semibold text-foreground/80">
-        {product.wholesale_price != null ? formatPrice(product.wholesale_price) : "—"}
+        {product.wholesale_price != null && product.wholesale_price > 0 ? formatPrice(product.wholesale_price) : "—"}
       </span>
       <span className="price-mono w-[64px] text-right text-[14px] font-bold text-foreground">
-        {product.shop_price != null ? formatPrice(product.shop_price) : "—"}
+        {product.shop_price != null && product.shop_price > 0 ? formatPrice(product.shop_price) : "—"}
       </span>
     </div>
   );
