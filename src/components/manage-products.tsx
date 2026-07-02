@@ -17,11 +17,12 @@ import {
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/components/auth-provider";
-import type { Category, Product } from "@/lib/types";
+import type { Category, Product, Subcategory } from "@/lib/types";
 
 interface ManageProductsProps {
   initialProducts: Product[];
   categories: Category[];
+  subcategories: Subcategory[];
 }
 
 interface GroupedProducts {
@@ -95,6 +96,7 @@ function formatPrice(value: number): string {
 export function ManageProducts({
   initialProducts,
   categories,
+  subcategories,
 }: ManageProductsProps) {
   const { profile, loading } = useAuth();
   const router = useRouter();
@@ -115,7 +117,9 @@ export function ManageProducts({
   const [newName, setNewName] = useState("");
   const [newUnit, setNewUnit] = useState("");
   const [newMasterPrice, setNewMasterPrice] = useState("");
+  const [newShopPrice, setNewShopPrice] = useState("");
   const [newCategoryId, setNewCategoryId] = useState("");
+  const [newSubcategoryId, setNewSubcategoryId] = useState("");
 
   const editInputRef = useRef<HTMLInputElement>(null);
 
@@ -220,11 +224,17 @@ export function ManageProducts({
     }
   }, [editingProductId, editPriceValue, supabase, router]);
 
+  const filteredSubcategories = useMemo(
+    () => subcategories.filter((s) => !newCategoryId || s.category_id === newCategoryId),
+    [subcategories, newCategoryId]
+  );
+
   const handleAddProduct = useCallback(async () => {
     const trimmedName = newName.trim();
     if (!trimmedName) return;
 
     const masterPrice = parseFloat(newMasterPrice) || 0;
+    const shopPrice = newShopPrice ? parseFloat(newShopPrice) : null;
 
     setSaving(true);
 
@@ -232,7 +242,9 @@ export function ManageProducts({
       name: trimmedName,
       unit: newUnit.trim() || null,
       master_price: masterPrice,
+      shop_price: shopPrice,
       category_id: newCategoryId || null,
+      subcategory_id: newSubcategoryId || null,
     });
 
     setSaving(false);
@@ -242,10 +254,12 @@ export function ManageProducts({
       setNewName("");
       setNewUnit("");
       setNewMasterPrice("");
+      setNewShopPrice("");
       setNewCategoryId("");
+      setNewSubcategoryId("");
       router.refresh();
     }
-  }, [newName, newUnit, newMasterPrice, newCategoryId, supabase, router]);
+  }, [newName, newUnit, newMasterPrice, newShopPrice, newCategoryId, newSubcategoryId, supabase, router]);
 
   const handleDelete = useCallback(async () => {
     if (!deleteTarget) return;
@@ -444,66 +458,73 @@ export function ManageProducts({
 
                       <div className="flex items-center gap-2">
                         {/* Price display / edit */}
-                        {editingProductId === product.id ? (
-                          <div className="flex items-center gap-1 rounded-xl bg-copper/10 px-2.5 py-1">
-                            <span className="text-[13px] font-bold text-copper">
-                              &#8377;
-                            </span>
-                            <input
-                              ref={
-                                editingProductId === product.id
-                                  ? editInputRef
-                                  : undefined
-                              }
-                              type="number"
-                              inputMode="decimal"
-                              min={0}
-                              step="0.01"
-                              value={editPriceValue}
-                              onChange={(e) =>
-                                setEditPriceValue(e.target.value)
-                              }
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter") savePrice();
-                                else if (e.key === "Escape")
-                                  cancelEditPrice();
-                              }}
-                              onBlur={savePrice}
-                              className="w-20 border-none bg-transparent text-right text-[15px] font-bold text-copper focus:outline-none price-mono"
-                              disabled={saving}
-                            />
+                        <div className="flex flex-col items-end gap-0.5">
+                          {editingProductId === product.id ? (
+                            <div className="flex items-center gap-1 rounded-xl bg-copper/10 px-2.5 py-1">
+                              <span className="text-[13px] font-bold text-copper">
+                                &#8377;
+                              </span>
+                              <input
+                                ref={
+                                  editingProductId === product.id
+                                    ? editInputRef
+                                    : undefined
+                                }
+                                type="number"
+                                inputMode="decimal"
+                                min={0}
+                                step="0.01"
+                                value={editPriceValue}
+                                onChange={(e) =>
+                                  setEditPriceValue(e.target.value)
+                                }
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") savePrice();
+                                  else if (e.key === "Escape")
+                                    cancelEditPrice();
+                                }}
+                                onBlur={savePrice}
+                                className="w-20 border-none bg-transparent text-right text-[15px] font-bold text-copper focus:outline-none price-mono"
+                                disabled={saving}
+                              />
+                              <button
+                                onClick={savePrice}
+                                className="ml-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-copper/20 active:scale-95"
+                                aria-label="Save price"
+                              >
+                                <Check
+                                  size={12}
+                                  className="text-copper"
+                                  strokeWidth={3}
+                                />
+                              </button>
+                            </div>
+                          ) : (
                             <button
-                              onClick={savePrice}
-                              className="ml-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-copper/20 active:scale-95"
-                              aria-label="Save price"
+                              onClick={() =>
+                                startEditPrice(
+                                  product.id,
+                                  product.master_price
+                                )
+                              }
+                              className="flex items-center gap-1 rounded-xl bg-secondary px-2.5 py-1 transition-colors active:scale-95 active:bg-copper/10"
                             >
-                              <Check
-                                size={12}
-                                className="text-copper"
-                                strokeWidth={3}
+                              <span className="price-mono text-[14px] font-bold text-foreground">
+                                &#8377;{formatPrice(product.master_price)}
+                              </span>
+                              <Pencil
+                                size={11}
+                                className="text-muted-foreground/60"
+                                strokeWidth={2}
                               />
                             </button>
-                          </div>
-                        ) : (
-                          <button
-                            onClick={() =>
-                              startEditPrice(
-                                product.id,
-                                product.master_price
-                              )
-                            }
-                            className="flex items-center gap-1 rounded-xl bg-secondary px-2.5 py-1 transition-colors active:scale-95 active:bg-copper/10"
-                          >
-                            <span className="price-mono text-[15px] font-bold text-foreground">
-                              &#8377;{formatPrice(product.master_price)}
+                          )}
+                          {product.shop_price != null && (
+                            <span className="price-mono text-[11px] text-muted-foreground">
+                              Shop: &#8377;{formatPrice(product.shop_price)}
                             </span>
-                            <Pencil
-                              size={11}
-                              className="text-muted-foreground/60"
-                              strokeWidth={2}
-                            />
-                          </button>
-                        )}
+                          )}
+                        </div>
 
                         {/* Delete button */}
                         <button
@@ -603,23 +624,23 @@ export function ManageProducts({
                     />
                   </div>
 
+                  <div className="ios-group card-glow rounded-xl px-4 py-3">
+                    <label className="block text-[13px] font-medium text-muted-foreground">
+                      Unit
+                    </label>
+                    <input
+                      type="text"
+                      value={newUnit}
+                      onChange={(e) => setNewUnit(e.target.value)}
+                      placeholder="e.g. pc, mtr, kg, packet"
+                      className="mt-1 w-full border-none bg-transparent text-[17px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
+                    />
+                  </div>
+
                   <div className="flex gap-3">
                     <div className="ios-group card-glow flex-1 rounded-xl px-4 py-3">
                       <label className="block text-[13px] font-medium text-muted-foreground">
-                        Unit
-                      </label>
-                      <input
-                        type="text"
-                        value={newUnit}
-                        onChange={(e) => setNewUnit(e.target.value)}
-                        placeholder="e.g. 20 Ltr"
-                        className="mt-1 w-full border-none bg-transparent text-[17px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
-                      />
-                    </div>
-
-                    <div className="ios-group card-glow flex-1 rounded-xl px-4 py-3">
-                      <label className="block text-[13px] font-medium text-muted-foreground">
-                        Master Price
+                        MRP (Master Price)
                       </label>
                       <input
                         type="number"
@@ -632,6 +653,22 @@ export function ManageProducts({
                         className="mt-1 w-full border-none bg-transparent text-[17px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none price-mono"
                       />
                     </div>
+
+                    <div className="ios-group card-glow flex-1 rounded-xl px-4 py-3">
+                      <label className="block text-[13px] font-medium text-muted-foreground">
+                        Shop Price
+                      </label>
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        min={0}
+                        step="0.01"
+                        value={newShopPrice}
+                        onChange={(e) => setNewShopPrice(e.target.value)}
+                        placeholder="Optional"
+                        className="mt-1 w-full border-none bg-transparent text-[17px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none price-mono"
+                      />
+                    </div>
                   </div>
 
                   <div className="ios-group card-glow relative rounded-xl px-4 py-3">
@@ -641,10 +678,13 @@ export function ManageProducts({
                     <div className="relative mt-1">
                       <select
                         value={newCategoryId}
-                        onChange={(e) => setNewCategoryId(e.target.value)}
+                        onChange={(e) => {
+                          setNewCategoryId(e.target.value);
+                          setNewSubcategoryId("");
+                        }}
                         className="w-full appearance-none border-none bg-transparent pr-8 text-[17px] font-medium text-foreground focus:outline-none"
                       >
-                        <option value="">No category</option>
+                        <option value="">Select category</option>
                         {categories.map((cat) => (
                           <option key={cat.id} value={cat.id}>
                             {cat.name}
@@ -658,6 +698,33 @@ export function ManageProducts({
                       />
                     </div>
                   </div>
+
+                  {filteredSubcategories.length > 0 && (
+                    <div className="ios-group card-glow relative rounded-xl px-4 py-3">
+                      <label className="block text-[13px] font-medium text-muted-foreground">
+                        Subcategory
+                      </label>
+                      <div className="relative mt-1">
+                        <select
+                          value={newSubcategoryId}
+                          onChange={(e) => setNewSubcategoryId(e.target.value)}
+                          className="w-full appearance-none border-none bg-transparent pr-8 text-[17px] font-medium text-foreground focus:outline-none"
+                        >
+                          <option value="">No subcategory</option>
+                          {filteredSubcategories.map((sub) => (
+                            <option key={sub.id} value={sub.id}>
+                              {sub.name}
+                            </option>
+                          ))}
+                        </select>
+                        <ChevronDown
+                          size={16}
+                          className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground"
+                          strokeWidth={2}
+                        />
+                      </div>
+                    </div>
+                  )}
 
                   <button
                     onClick={handleAddProduct}

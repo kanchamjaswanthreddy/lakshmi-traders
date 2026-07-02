@@ -10,9 +10,11 @@ export interface Category {
 export interface Product {
   id: string;
   category_id: string | null;
+  subcategory_id: string | null;
   name: string;
   unit: string | null;
   master_price: number;
+  shop_price: number | null;
   created_at: string;
   updated_at: string;
   category?: Category;

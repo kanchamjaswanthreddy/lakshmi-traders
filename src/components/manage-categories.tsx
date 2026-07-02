@@ -55,6 +55,8 @@ export function ManageCategories({ initialCategories }: ManageCategoriesProps) {
   const [newDescription, setNewDescription] = useState("");
   const [newRegularDiscount, setNewRegularDiscount] = useState("");
   const [newShopOwnerDiscount, setNewShopOwnerDiscount] = useState("");
+  const [newSubcategories, setNewSubcategories] = useState<string[]>([]);
+  const [subInput, setSubInput] = useState("");
 
   const editInputRef = useRef<HTMLInputElement>(null);
 
@@ -117,6 +119,18 @@ export function ManageCategories({ initialCategories }: ManageCategoriesProps) {
     }
   }, [editing, editValue, supabase, router]);
 
+  const addSubToList = useCallback(() => {
+    const trimmed = subInput.trim();
+    if (trimmed && !newSubcategories.includes(trimmed)) {
+      setNewSubcategories((prev) => [...prev, trimmed]);
+      setSubInput("");
+    }
+  }, [subInput, newSubcategories]);
+
+  const removeSubFromList = useCallback((name: string) => {
+    setNewSubcategories((prev) => prev.filter((s) => s !== name));
+  }, []);
+
   const handleAddCategory = useCallback(async () => {
     const trimmedName = newName.trim();
     if (!trimmedName) return;
@@ -126,12 +140,25 @@ export function ManageCategories({ initialCategories }: ManageCategoriesProps) {
 
     setSaving(true);
 
-    const { error } = await supabase.from("categories").insert({
-      name: trimmedName,
-      description: newDescription.trim() || null,
-      regular_discount_pct: regularPct,
-      shop_owner_discount_pct: shopOwnerPct,
-    });
+    const { data: catData, error } = await supabase
+      .from("categories")
+      .insert({
+        name: trimmedName,
+        description: newDescription.trim() || null,
+        regular_discount_pct: regularPct,
+        shop_owner_discount_pct: shopOwnerPct,
+      })
+      .select()
+      .single();
+
+    if (!error && catData && newSubcategories.length > 0) {
+      await supabase.from("subcategories").insert(
+        newSubcategories.map((s) => ({
+          name: s,
+          category_id: catData.id,
+        }))
+      );
+    }
 
     setSaving(false);
 
@@ -141,9 +168,11 @@ export function ManageCategories({ initialCategories }: ManageCategoriesProps) {
       setNewDescription("");
       setNewRegularDiscount("");
       setNewShopOwnerDiscount("");
+      setNewSubcategories([]);
+      setSubInput("");
       router.refresh();
     }
-  }, [newName, newDescription, newRegularDiscount, newShopOwnerDiscount, supabase, router]);
+  }, [newName, newDescription, newRegularDiscount, newShopOwnerDiscount, newSubcategories, supabase, router]);
 
   const handleDelete = useCallback(async () => {
     if (!deleteTarget) return;
@@ -435,6 +464,55 @@ export function ManageCategories({ initialCategories }: ManageCategoriesProps) {
                         className="mt-1 w-full border-none bg-transparent text-[17px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none price-mono"
                       />
                     </div>
+                  </div>
+
+                  {/* Subcategories */}
+                  <div className="ios-group card-glow rounded-xl px-4 py-3">
+                    <label className="block text-[13px] font-medium text-muted-foreground">
+                      Subcategories (optional)
+                    </label>
+                    <div className="mt-1 flex gap-2">
+                      <input
+                        type="text"
+                        value={subInput}
+                        onChange={(e) => setSubInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            addSubToList();
+                          }
+                        }}
+                        placeholder="e.g. 16mm, 20mm, Local"
+                        className="flex-1 border-none bg-transparent text-[16px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={addSubToList}
+                        disabled={!subInput.trim()}
+                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-foreground text-background transition-transform active:scale-95 disabled:opacity-30"
+                      >
+                        <Plus size={16} strokeWidth={2.5} />
+                      </button>
+                    </div>
+                    {newSubcategories.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {newSubcategories.map((sub) => (
+                          <span
+                            key={sub}
+                            className="inline-flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-[13px] font-medium text-foreground"
+                          >
+                            {sub}
+                            <button
+                              type="button"
+                              onClick={() => removeSubFromList(sub)}
+                              className="ml-0.5 rounded-full active:scale-90"
+                            >
+                              <X size={12} strokeWidth={2.5} className="text-muted-foreground" />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   <button
