@@ -1,12 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
   ArrowRightLeft,
-  Check,
   ChevronDown,
   Package,
   Pencil,
@@ -114,8 +113,10 @@ export function ManageProducts({
   const [moveTarget, setMoveTarget] = useState<Product | null>(null);
   const [moveCategoryId, setMoveCategoryId] = useState("");
   const [moveSubcategoryId, setMoveSubcategoryId] = useState("");
-  const [editingProductId, setEditingProductId] = useState<string | null>(null);
-  const [editPriceValue, setEditPriceValue] = useState("");
+  const [editTarget, setEditTarget] = useState<Product | null>(null);
+  const [editBuy, setEditBuy] = useState("");
+  const [editWholesale, setEditWholesale] = useState("");
+  const [editRetail, setEditRetail] = useState("");
   const [saving, setSaving] = useState(false);
 
   // Add form state
@@ -127,8 +128,6 @@ export function ManageProducts({
   const [newCategoryId, setNewCategoryId] = useState("");
   const [newSubcategoryId, setNewSubcategoryId] = useState("");
 
-  const editInputRef = useRef<HTMLInputElement>(null);
-
   useEffect(() => {
     if (!loading && profile?.role !== "admin") {
       router.replace("/");
@@ -138,13 +137,6 @@ export function ManageProducts({
   useEffect(() => {
     setProducts(initialProducts);
   }, [initialProducts]);
-
-  useEffect(() => {
-    if (editingProductId && editInputRef.current) {
-      editInputRef.current.focus();
-      editInputRef.current.select();
-    }
-  }, [editingProductId]);
 
   // Reset visible count when filters change
   useEffect(() => {
@@ -190,45 +182,42 @@ export function ManageProducts({
     return { visibleGroups: result, hasMore: moreAvailable };
   }, [grouped, visibleCount]);
 
-  const startEditPrice = useCallback(
-    (productId: string, currentPrice: number) => {
-      setEditingProductId(productId);
-      setEditPriceValue(String(currentPrice));
-    },
-    []
-  );
-
-  const cancelEditPrice = useCallback(() => {
-    setEditingProductId(null);
-    setEditPriceValue("");
+  const openEditPrices = useCallback((product: Product) => {
+    setEditTarget(product);
+    setEditBuy(String(product.master_price));
+    setEditWholesale(product.wholesale_price != null ? String(product.wholesale_price) : "");
+    setEditRetail(product.shop_price != null ? String(product.shop_price) : "");
   }, []);
 
-  const savePrice = useCallback(async () => {
-    if (!editingProductId) return;
-
-    const numValue = parseFloat(editPriceValue);
-    if (isNaN(numValue) || numValue < 0) return;
+  const savePrices = useCallback(async () => {
+    if (!editTarget) return;
+    const buyVal = parseFloat(editBuy) || 0;
+    const wholesaleVal = editWholesale ? parseFloat(editWholesale) : null;
+    const retailVal = editRetail ? parseFloat(editRetail) : null;
 
     setSaving(true);
-
     const { error } = await supabase
       .from("products")
-      .update({ master_price: numValue })
-      .eq("id", editingProductId);
-
+      .update({
+        master_price: buyVal,
+        wholesale_price: wholesaleVal,
+        shop_price: retailVal,
+      })
+      .eq("id", editTarget.id);
     setSaving(false);
 
     if (!error) {
       setProducts((prev) =>
         prev.map((p) =>
-          p.id === editingProductId ? { ...p, master_price: numValue } : p
+          p.id === editTarget.id
+            ? { ...p, master_price: buyVal, wholesale_price: wholesaleVal, shop_price: retailVal }
+            : p
         )
       );
-      setEditingProductId(null);
-      setEditPriceValue("");
+      setEditTarget(null);
       router.refresh();
     }
-  }, [editingProductId, editPriceValue, supabase, router]);
+  }, [editTarget, editBuy, editWholesale, editRetail, supabase, router]);
 
   const filteredSubcategories = useMemo(
     () => subcategories.filter((s) => !newCategoryId || s.category_id === newCategoryId),
@@ -500,75 +489,23 @@ export function ManageProducts({
                         )}
                       </div>
 
-                      <div className="flex items-center gap-2">
-                        {/* Price display / edit */}
-                        <div className="flex flex-col items-end gap-0.5">
-                          {editingProductId === product.id ? (
-                            <div className="flex items-center gap-1 rounded-xl bg-copper/10 px-2.5 py-1">
-                              <span className="text-[13px] font-bold text-copper">
-                                &#8377;
-                              </span>
-                              <input
-                                ref={
-                                  editingProductId === product.id
-                                    ? editInputRef
-                                    : undefined
-                                }
-                                type="number"
-                                inputMode="decimal"
-                                min={0}
-                                step="0.01"
-                                value={editPriceValue}
-                                onChange={(e) =>
-                                  setEditPriceValue(e.target.value)
-                                }
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") savePrice();
-                                  else if (e.key === "Escape")
-                                    cancelEditPrice();
-                                }}
-                                onBlur={savePrice}
-                                className="w-20 border-none bg-transparent text-right text-[15px] font-bold text-copper focus:outline-none price-mono"
-                                disabled={saving}
-                              />
-                              <button
-                                onClick={savePrice}
-                                className="ml-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-copper/20 active:scale-95"
-                                aria-label="Save price"
-                              >
-                                <Check
-                                  size={12}
-                                  className="text-copper"
-                                  strokeWidth={3}
-                                />
-                              </button>
-                            </div>
-                          ) : (
-                            <button
-                              onClick={() =>
-                                startEditPrice(
-                                  product.id,
-                                  product.master_price
-                                )
-                              }
-                              className="flex items-center gap-1 rounded-xl bg-secondary px-2.5 py-1 transition-colors active:scale-95 active:bg-copper/10"
-                            >
-                              <span className="price-mono text-[14px] font-bold text-foreground">
-                                &#8377;{formatPrice(product.master_price)}
-                              </span>
-                              <Pencil
-                                size={11}
-                                className="text-muted-foreground/60"
-                                strokeWidth={2}
-                              />
-                            </button>
-                          )}
-                          {product.shop_price != null && (
-                            <span className="price-mono text-[11px] text-muted-foreground">
-                              Shop: &#8377;{formatPrice(product.shop_price)}
-                            </span>
-                          )}
-                        </div>
+                      <div className="flex items-center gap-1.5">
+                        {/* Prices - tap to edit */}
+                        <button
+                          onClick={() => openEditPrices(product)}
+                          className="flex items-center gap-0.5 rounded-xl bg-secondary px-2 py-1 transition-colors active:scale-95"
+                        >
+                          <span className="price-mono text-[11px] text-muted-foreground/50">
+                            {"\u20B9"}{formatPrice(product.master_price)}
+                          </span>
+                          <span className="price-mono text-[12px] font-semibold text-foreground/70">
+                            {product.wholesale_price != null ? `\u20B9${formatPrice(product.wholesale_price)}` : "—"}
+                          </span>
+                          <span className="price-mono text-[13px] font-bold text-foreground">
+                            {product.shop_price != null ? `\u20B9${formatPrice(product.shop_price)}` : "—"}
+                          </span>
+                          <Pencil size={10} className="ml-0.5 text-muted-foreground/40" strokeWidth={2} />
+                        </button>
 
                         {/* Move button */}
                         <button
@@ -814,6 +751,34 @@ export function ManageProducts({
             className="w-full rounded-2xl bg-gradient-to-r from-[#1D1D1F] to-[#3A3A3C] py-3.5 text-[17px] font-semibold text-white transition-transform duration-150 active:scale-[0.97] disabled:opacity-50"
           >
             {saving ? "Moving..." : "Move Product"}
+          </button>
+        </div>
+      </BottomSheet>
+
+      {/* Edit Prices Bottom Sheet */}
+      <BottomSheet open={!!editTarget} onClose={() => setEditTarget(null)} title="Edit Prices">
+        <p className="mb-4 text-[14px] text-muted-foreground">
+          <span className="font-semibold text-foreground">{editTarget?.name}</span>
+        </p>
+        <div className="space-y-3">
+          <div className="ios-group card-glow rounded-xl px-4 py-3">
+            <label className="block text-[12px] font-medium text-muted-foreground">Buying Price (Cost)</label>
+            <input type="number" inputMode="decimal" min={0} step="0.01" value={editBuy} onChange={(e) => setEditBuy(e.target.value)} placeholder="0" className="mt-0.5 w-full border-none bg-transparent text-[17px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none price-mono" autoFocus />
+          </div>
+          <div className="ios-group card-glow rounded-xl px-4 py-3">
+            <label className="block text-[12px] font-medium text-muted-foreground">Wholesale Price (Stores)</label>
+            <input type="number" inputMode="decimal" min={0} step="0.01" value={editWholesale} onChange={(e) => setEditWholesale(e.target.value)} placeholder="Leave empty if same as buying" className="mt-0.5 w-full border-none bg-transparent text-[17px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none price-mono" />
+          </div>
+          <div className="ios-group card-glow rounded-xl px-4 py-3">
+            <label className="block text-[12px] font-medium text-muted-foreground">Retail Price (Customers)</label>
+            <input type="number" inputMode="decimal" min={0} step="0.01" value={editRetail} onChange={(e) => setEditRetail(e.target.value)} placeholder="Leave empty if same as buying" className="mt-0.5 w-full border-none bg-transparent text-[17px] font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none price-mono" />
+          </div>
+          <button
+            onClick={savePrices}
+            disabled={saving}
+            className="w-full rounded-2xl bg-gradient-to-r from-[#1D1D1F] to-[#3A3A3C] py-3.5 text-[17px] font-semibold text-white transition-transform duration-150 active:scale-[0.97] disabled:opacity-50"
+          >
+            {saving ? "Saving..." : "Save Prices"}
           </button>
         </div>
       </BottomSheet>
