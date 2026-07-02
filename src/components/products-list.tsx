@@ -386,7 +386,7 @@ function ProductRow({ product, category, isLast }: { product: Product; category?
           <p className="mt-0.5 text-[11px] text-muted-foreground">{product.unit}</p>
         )}
       </div>
-      <span className="price-mono w-[60px] text-right text-[11px] font-medium text-muted-foreground/50">
+      <span className="price-mono w-[60px] text-right text-[12px] font-semibold text-foreground/70">
         {product.master_price > 0 ? formatPrice(product.master_price) : "—"}
       </span>
       <span className="price-mono w-[60px] text-right text-[13px] font-semibold text-foreground/80">
