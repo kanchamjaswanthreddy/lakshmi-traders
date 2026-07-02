@@ -205,7 +205,7 @@ export function ManageSubcategories({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={SPRING}
-              className="fixed inset-0 z-50 bg-black/40"
+              className="fixed inset-0 z-[60] bg-black/40"
               onClick={() => setShowSheet(false)}
             />
             <motion.div
@@ -213,7 +213,7 @@ export function ManageSubcategories({
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", stiffness: 300, damping: 32 }}
-              className="fixed inset-x-0 bottom-0 z-50 rounded-t-[20px] bg-card backdrop-blur-xl safe-bottom"
+              className="fixed inset-x-0 bottom-0 z-[60] rounded-t-[20px] bg-card backdrop-blur-xl safe-bottom"
               style={{
                 boxShadow: "0 -8px 32px rgba(0,0,0,0.12)",
               }}

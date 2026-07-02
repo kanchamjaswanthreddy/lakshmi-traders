@@ -555,7 +555,7 @@ export function ManageProducts({
               animate="visible"
               exit="hidden"
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-50 bg-black/40"
+              className="fixed inset-0 z-[60] bg-black/40"
               onClick={() => setShowAddSheet(false)}
             />
             <motion.div
@@ -565,7 +565,7 @@ export function ManageProducts({
               animate="visible"
               exit="hidden"
               transition={{ ...SPRING, stiffness: 400 }}
-              className="fixed inset-x-0 bottom-0 z-50 rounded-t-[28px] bg-background safe-bottom"
+              className="fixed inset-x-0 bottom-0 z-[60] rounded-t-[28px] bg-background safe-bottom"
               style={{ maxHeight: "85dvh", backdropFilter: "blur(40px) saturate(200%)", WebkitBackdropFilter: "blur(40px) saturate(200%)" }}
             >
               <div className="mx-auto mt-2 h-1.5 w-10 rounded-full bg-muted-foreground/30" />
@@ -684,7 +684,7 @@ export function ManageProducts({
               animate="visible"
               exit="hidden"
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-50 bg-black/40"
+              className="fixed inset-0 z-[60] bg-black/40"
               onClick={() => setDeleteTarget(null)}
             />
             <motion.div
@@ -694,7 +694,7 @@ export function ManageProducts({
               animate="visible"
               exit="hidden"
               transition={{ ...SPRING, stiffness: 400 }}
-              className="fixed inset-x-0 bottom-0 z-50 rounded-t-[28px] bg-background safe-bottom"
+              className="fixed inset-x-0 bottom-0 z-[60] rounded-t-[28px] bg-background safe-bottom"
               style={{ backdropFilter: "blur(40px) saturate(200%)", WebkitBackdropFilter: "blur(40px) saturate(200%)" }}
             >
               <div className="mx-auto mt-2 h-1.5 w-10 rounded-full bg-muted-foreground/30" />
