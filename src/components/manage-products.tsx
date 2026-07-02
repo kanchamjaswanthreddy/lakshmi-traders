@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
+  ArrowRightLeft,
   Check,
   ChevronDown,
   Package,
@@ -109,6 +110,9 @@ export function ManageProducts({
 
   const [showAddSheet, setShowAddSheet] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
+  const [moveTarget, setMoveTarget] = useState<Product | null>(null);
+  const [moveCategoryId, setMoveCategoryId] = useState("");
+  const [moveSubcategoryId, setMoveSubcategoryId] = useState("");
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const [editPriceValue, setEditPriceValue] = useState("");
   const [saving, setSaving] = useState(false);
@@ -279,6 +283,41 @@ export function ManageProducts({
       router.refresh();
     }
   }, [deleteTarget, supabase, router]);
+
+  const moveSubsFiltered = useMemo(
+    () => subcategories.filter((s) => !moveCategoryId || s.category_id === moveCategoryId),
+    [subcategories, moveCategoryId]
+  );
+
+  const openMoveSheet = useCallback((product: Product) => {
+    setMoveTarget(product);
+    setMoveCategoryId(product.category_id ?? "");
+    setMoveSubcategoryId(product.subcategory_id ?? "");
+  }, []);
+
+  const handleMove = useCallback(async () => {
+    if (!moveTarget) return;
+    setSaving(true);
+    const { error } = await supabase
+      .from("products")
+      .update({
+        category_id: moveCategoryId || null,
+        subcategory_id: moveSubcategoryId || null,
+      })
+      .eq("id", moveTarget.id);
+    setSaving(false);
+    if (!error) {
+      setProducts((prev) =>
+        prev.map((p) =>
+          p.id === moveTarget.id
+            ? { ...p, category_id: moveCategoryId || null, subcategory_id: moveSubcategoryId || null }
+            : p
+        )
+      );
+      setMoveTarget(null);
+      router.refresh();
+    }
+  }, [moveTarget, moveCategoryId, moveSubcategoryId, supabase, router]);
 
   if (loading) {
     return (
@@ -526,6 +565,18 @@ export function ManageProducts({
                           )}
                         </div>
 
+                        {/* Move button */}
+                        <button
+                          onClick={() => openMoveSheet(product)}
+                          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors active:scale-95 active:bg-foreground/10"
+                          aria-label={`Move ${product.name}`}
+                        >
+                          <ArrowRightLeft
+                            size={15}
+                            className="text-foreground/50"
+                            strokeWidth={1.8}
+                          />
+                        </button>
                         {/* Delete button */}
                         <button
                           onClick={() => setDeleteTarget(product)}
@@ -586,12 +637,12 @@ export function ManageProducts({
               animate="visible"
               exit="hidden"
               transition={{ ...SPRING, stiffness: 400 }}
-              className="fixed inset-x-0 bottom-0 z-[60] rounded-t-[28px] bg-background safe-bottom"
-              style={{ maxHeight: "85dvh", backdropFilter: "blur(40px) saturate(200%)", WebkitBackdropFilter: "blur(40px) saturate(200%)" }}
+              className="fixed inset-x-0 bottom-0 z-[60] overflow-y-auto rounded-t-[28px] bg-background"
+              style={{ maxHeight: "90dvh", paddingBottom: "calc(env(safe-area-inset-bottom, 20px) + 20px)", backdropFilter: "blur(40px) saturate(200%)", WebkitBackdropFilter: "blur(40px) saturate(200%)" }}
             >
               <div className="mx-auto mt-2 h-1.5 w-10 rounded-full bg-muted-foreground/30" />
 
-              <div className="px-5 pt-4 pb-6">
+              <div className="px-5 pt-4 pb-4">
                 <div className="mb-5 flex items-center justify-between">
                   <h2 className="text-xl font-bold text-foreground">
                     Add Product
@@ -761,12 +812,12 @@ export function ManageProducts({
               animate="visible"
               exit="hidden"
               transition={{ ...SPRING, stiffness: 400 }}
-              className="fixed inset-x-0 bottom-0 z-[60] rounded-t-[28px] bg-background safe-bottom"
-              style={{ backdropFilter: "blur(40px) saturate(200%)", WebkitBackdropFilter: "blur(40px) saturate(200%)" }}
+              className="fixed inset-x-0 bottom-0 z-[60] rounded-t-[28px] bg-background"
+              style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 20px) + 20px)", backdropFilter: "blur(40px) saturate(200%)", WebkitBackdropFilter: "blur(40px) saturate(200%)" }}
             >
               <div className="mx-auto mt-2 h-1.5 w-10 rounded-full bg-muted-foreground/30" />
 
-              <div className="px-5 pt-4 pb-6">
+              <div className="px-5 pt-4 pb-4">
                 <h2 className="text-xl font-bold text-foreground">
                   Delete Product
                 </h2>
@@ -791,6 +842,108 @@ export function ManageProducts({
                     className="flex-1 rounded-2xl bg-destructive py-3.5 text-[17px] font-semibold text-white transition-all active:scale-95 disabled:opacity-50"
                   >
                     {saving ? "Deleting..." : "Delete"}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Move Product Bottom Sheet */}
+      <AnimatePresence>
+        {moveTarget && (
+          <>
+            <motion.div
+              key="move-overlay"
+              variants={OVERLAY_VARIANTS}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-[60] bg-black/40"
+              onClick={() => setMoveTarget(null)}
+            />
+            <motion.div
+              key="move-sheet"
+              variants={SHEET_VARIANTS}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              transition={{ ...SPRING, stiffness: 400 }}
+              className="fixed inset-x-0 bottom-0 z-[60] overflow-y-auto rounded-t-[28px] bg-background"
+              style={{ maxHeight: "80dvh", paddingBottom: "calc(env(safe-area-inset-bottom, 20px) + 20px)", backdropFilter: "blur(40px) saturate(200%)", WebkitBackdropFilter: "blur(40px) saturate(200%)" }}
+            >
+              <div className="mx-auto mt-2 h-1.5 w-10 rounded-full bg-muted-foreground/30" />
+
+              <div className="px-5 pt-4 pb-4">
+                <div className="mb-4 flex items-center justify-between">
+                  <h2 className="text-xl font-bold text-foreground">
+                    Move Product
+                  </h2>
+                  <button
+                    onClick={() => setMoveTarget(null)}
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary transition-transform active:scale-95"
+                    aria-label="Close"
+                  >
+                    <X size={16} className="text-muted-foreground" strokeWidth={2.5} />
+                  </button>
+                </div>
+
+                <p className="mb-4 text-[14px] text-muted-foreground">
+                  Moving <span className="font-semibold text-foreground">{moveTarget.name}</span>
+                </p>
+
+                <div className="space-y-3">
+                  <div className="ios-group card-glow relative rounded-xl px-4 py-3">
+                    <label className="block text-[13px] font-medium text-muted-foreground">
+                      Category
+                    </label>
+                    <div className="relative mt-1">
+                      <select
+                        value={moveCategoryId}
+                        onChange={(e) => {
+                          setMoveCategoryId(e.target.value);
+                          setMoveSubcategoryId("");
+                        }}
+                        className="w-full appearance-none border-none bg-transparent pr-8 text-[17px] font-medium text-foreground focus:outline-none"
+                      >
+                        <option value="">No category</option>
+                        {categories.map((cat) => (
+                          <option key={cat.id} value={cat.id}>{cat.name}</option>
+                        ))}
+                      </select>
+                      <ChevronDown size={16} className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground" strokeWidth={2} />
+                    </div>
+                  </div>
+
+                  {moveSubsFiltered.length > 0 && (
+                    <div className="ios-group card-glow relative rounded-xl px-4 py-3">
+                      <label className="block text-[13px] font-medium text-muted-foreground">
+                        Subcategory
+                      </label>
+                      <div className="relative mt-1">
+                        <select
+                          value={moveSubcategoryId}
+                          onChange={(e) => setMoveSubcategoryId(e.target.value)}
+                          className="w-full appearance-none border-none bg-transparent pr-8 text-[17px] font-medium text-foreground focus:outline-none"
+                        >
+                          <option value="">No subcategory</option>
+                          {moveSubsFiltered.map((sub) => (
+                            <option key={sub.id} value={sub.id}>{sub.name}</option>
+                          ))}
+                        </select>
+                        <ChevronDown size={16} className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground" strokeWidth={2} />
+                      </div>
+                    </div>
+                  )}
+
+                  <button
+                    onClick={handleMove}
+                    disabled={saving}
+                    className="w-full rounded-2xl bg-gradient-to-r from-[#1D1D1F] to-[#3A3A3C] py-3.5 text-[17px] font-semibold text-white transition-transform duration-150 active:scale-[0.97] disabled:opacity-50"
+                  >
+                    {saving ? "Moving..." : "Move Product"}
                   </button>
                 </div>
               </div>

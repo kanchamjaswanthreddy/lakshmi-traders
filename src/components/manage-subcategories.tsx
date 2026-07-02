@@ -213,8 +213,9 @@ export function ManageSubcategories({
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", stiffness: 300, damping: 32 }}
-              className="fixed inset-x-0 bottom-0 z-[60] rounded-t-[20px] bg-card backdrop-blur-xl safe-bottom"
+              className="fixed inset-x-0 bottom-0 z-[60] overflow-y-auto rounded-t-[20px] bg-card backdrop-blur-xl"
               style={{
+                paddingBottom: "calc(env(safe-area-inset-bottom, 20px) + 20px)",
                 boxShadow: "0 -8px 32px rgba(0,0,0,0.12)",
               }}
             >

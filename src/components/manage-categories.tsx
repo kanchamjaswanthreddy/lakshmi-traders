@@ -383,12 +383,12 @@ export function ManageCategories({ initialCategories }: ManageCategoriesProps) {
               animate="visible"
               exit="hidden"
               transition={{ ...SPRING, stiffness: 400 }}
-              className="fixed inset-x-0 bottom-0 z-[60] rounded-t-[28px] bg-background safe-bottom"
-              style={{ maxHeight: "85dvh", backdropFilter: "blur(40px) saturate(200%)", WebkitBackdropFilter: "blur(40px) saturate(200%)" }}
+              className="fixed inset-x-0 bottom-0 z-[60] overflow-y-auto rounded-t-[28px] bg-background"
+              style={{ maxHeight: "90dvh", paddingBottom: "calc(env(safe-area-inset-bottom, 20px) + 20px)", backdropFilter: "blur(40px) saturate(200%)", WebkitBackdropFilter: "blur(40px) saturate(200%)" }}
             >
               <div className="mx-auto mt-2 h-1.5 w-10 rounded-full bg-muted-foreground/30" />
 
-              <div className="px-5 pt-4 pb-6">
+              <div className="px-5 pt-4 pb-4">
                 <div className="mb-5 flex items-center justify-between">
                   <h2 className="text-xl font-bold text-foreground">
                     Add Category
@@ -550,8 +550,8 @@ export function ManageCategories({ initialCategories }: ManageCategoriesProps) {
               animate="visible"
               exit="hidden"
               transition={{ ...SPRING, stiffness: 400 }}
-              className="fixed inset-x-0 bottom-0 z-[60] rounded-t-[28px] bg-background safe-bottom"
-              style={{ backdropFilter: "blur(40px) saturate(200%)", WebkitBackdropFilter: "blur(40px) saturate(200%)" }}
+              className="fixed inset-x-0 bottom-0 z-[60] overflow-y-auto rounded-t-[28px] bg-background"
+              style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 20px) + 20px)", backdropFilter: "blur(40px) saturate(200%)", WebkitBackdropFilter: "blur(40px) saturate(200%)" }}
             >
               <div className="mx-auto mt-2 h-1.5 w-10 rounded-full bg-muted-foreground/30" />
 
