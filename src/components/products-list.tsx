@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Search, Package, Printer, ChevronRight, ArrowLeft, Layers, X } from "lucide-react";
 import type { Category, Product, Subcategory } from "@/lib/types";
@@ -19,7 +19,11 @@ type View =
   | { type: "search" };
 
 function formatPrice(value: number): string {
-  return "\u20B9" + value.toLocaleString("en-IN", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  const hasDecimals = value % 1 !== 0;
+  return "\u20B9" + value.toLocaleString("en-IN", {
+    minimumFractionDigits: hasDecimals ? 2 : 0,
+    maximumFractionDigits: 2,
+  });
 }
 
 export function ProductsList({ categories, products, subcategories }: ProductsListProps) {
@@ -27,6 +31,7 @@ export function ProductsList({ categories, products, subcategories }: ProductsLi
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [isReady, setIsReady] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { setIsReady(true); }, []);
 
@@ -99,6 +104,11 @@ export function ProductsList({ categories, products, subcategories }: ProductsLi
     );
   }
 
+  // Scroll to top when view changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [view]);
+
   const goBack = () => {
     if (view.type === "subcategory") {
       setView({ type: "category", categoryId: view.categoryId });
@@ -118,7 +128,10 @@ export function ProductsList({ categories, products, subcategories }: ProductsLi
         : currentSubcategory?.name ?? "Subcategory";
 
   return (
-    <div className="bg-mesh min-h-dvh px-4 pt-4 pb-8">
+    <div ref={scrollRef} className="bg-mesh min-h-dvh px-4 pt-4 pb-8">
+      {/* Fade overlay at top — visible when scrolled */}
+      <div className="pointer-events-none fixed inset-x-0 top-0 z-10 h-8 bg-gradient-to-b from-background to-transparent no-print" />
+
       {/* Header */}
       <div className="no-print mb-4 flex items-center gap-3">
         {showBack && (
