@@ -106,7 +106,7 @@ export function ProductsList({ categories, products, subcategories }: ProductsLi
 
   // Scroll to top when view changes
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "instant" });
+    window.scrollTo(0, 0);
   }, [view]);
 
   const goBack = () => {
