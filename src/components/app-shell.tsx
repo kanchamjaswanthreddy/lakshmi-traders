@@ -29,18 +29,18 @@ function AuthenticatedShell({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      {/* Top fade — solid through status bar, fades out over 40px below it */}
+      {/* Status bar cover — solid background exactly over the safe area, nothing more */}
       <div
         className="no-print pointer-events-none fixed inset-x-0 top-0 z-40"
         style={{
-          height: "calc(env(safe-area-inset-top, 0px) + 56px)",
-          background: "linear-gradient(to bottom, var(--background) calc(env(safe-area-inset-top, 0px) + 12px), transparent 100%)",
+          height: "env(safe-area-inset-top, 0px)",
+          background: "var(--background)",
         }}
       />
-      {/* Dynamic top padding = safe-area + enough to clear the fade */}
+      {/* Main content: push down by safe area only, pages handle their own header spacing */}
       <main
         className="flex-1 overflow-x-hidden pb-36 pwa-main-pad"
-        style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 52px)" }}
+        style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
       >{children}</main>
       {/* Bottom fade — blends scrolling content into background before the navbar */}
       <div
