@@ -129,9 +129,6 @@ export function ProductsList({ categories, products, subcategories }: ProductsLi
 
   return (
     <div ref={scrollRef} className="bg-mesh min-h-dvh px-4 pt-4 pb-8">
-      {/* Fade overlay at top — visible when scrolled */}
-      <div className="pointer-events-none fixed inset-x-0 top-0 z-10 h-8 bg-gradient-to-b from-background to-transparent no-print" />
-
       {/* Header */}
       <div className="no-print mb-4 flex items-center gap-3">
         {showBack && (

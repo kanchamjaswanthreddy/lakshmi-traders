@@ -29,8 +29,16 @@ function AuthenticatedShell({ children }: { children: React.ReactNode }) {
 
   return (
     <>
+      {/* Top fade — covers status bar area and blends content on scroll */}
+      <div
+        className="no-print pointer-events-none fixed inset-x-0 top-0 z-40"
+        style={{
+          height: "calc(env(safe-area-inset-top, 0px) + 48px)",
+          background: "linear-gradient(to bottom, var(--background) calc(env(safe-area-inset-top, 0px) + 8px), transparent 100%)",
+        }}
+      />
       <main className="flex-1 overflow-x-hidden pb-36 pwa-main-pad">{children}</main>
-      {/* Fade overlay — blends scrolling content into background before the navbar */}
+      {/* Bottom fade — blends scrolling content into background before the navbar */}
       <div
         className="no-print pointer-events-none fixed bottom-0 inset-x-0 z-40"
         style={{
