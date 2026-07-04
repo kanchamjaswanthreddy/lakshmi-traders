@@ -97,7 +97,7 @@ export function ProductsList({ categories, products, subcategories }: ProductsLi
 
   if (!isReady) {
     return (
-      <div className="bg-mesh min-h-dvh px-4 pt-4 pb-8">
+      <div className="bg-mesh min-h-dvh px-4 pt-14 pb-8">
         <div className="skeleton mb-5 h-9 w-36" />
         <div className="skeleton mb-4 h-14 w-full rounded-2xl" />
         <div className="space-y-3">
@@ -128,7 +128,7 @@ export function ProductsList({ categories, products, subcategories }: ProductsLi
         : currentSubcategory?.name ?? "Subcategory";
 
   return (
-    <div ref={scrollRef} className="bg-mesh min-h-dvh px-4 pt-4 pb-8">
+    <div ref={scrollRef} className="bg-mesh min-h-dvh px-4 pt-14 pb-8">
       {/* Header */}
       <div className="no-print mb-4 flex items-center gap-3">
         {showBack && (

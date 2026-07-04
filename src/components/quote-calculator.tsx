@@ -82,7 +82,7 @@ export function QuoteCalculator({ categories, products }: QuoteCalculatorProps) 
   };
 
   return (
-    <div className="bg-mesh min-h-dvh px-4 pt-2 pb-8">
+    <div className="bg-mesh min-h-dvh px-4 pt-14 pb-8">
       {/* Header */}
       <div className="mb-5 flex items-start justify-between">
         <motion.h1
