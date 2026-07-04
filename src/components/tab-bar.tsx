@@ -56,7 +56,7 @@ export function TabBar() {
               key={tab.href}
               href={tab.href}
               prefetch={true}
-              className="relative flex w-16 flex-col items-center gap-0.5 py-1.5 transition-transform duration-150 active:scale-90"
+              className="relative flex w-20 flex-col items-center gap-0.5 py-2 transition-transform duration-150 active:scale-90"
             >
               {isActive && (
                 <span
