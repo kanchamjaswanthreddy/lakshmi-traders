@@ -64,7 +64,7 @@ export function TabBar() {
     <nav
       className="no-print fixed bottom-0 inset-x-0 z-50 flex justify-center pointer-events-none"
       style={{
-        paddingBottom: "calc(env(safe-area-inset-bottom, 16px) + 10px)",
+        paddingBottom: "calc(env(safe-area-inset-bottom, 12px) + 6px)",
       }}
     >
       <div
