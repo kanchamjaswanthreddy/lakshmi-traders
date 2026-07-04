@@ -56,17 +56,29 @@ export function TabBar() {
               key={tab.href}
               href={tab.href}
               prefetch={true}
-              className="flex flex-col items-center gap-0.5 px-5 py-1.5 transition-transform duration-100 active:scale-90"
+              className="relative flex flex-col items-center gap-0.5 px-5 py-1.5 transition-transform duration-150 active:scale-90"
             >
+              {isActive && (
+                <span
+                  aria-hidden
+                  className="absolute inset-0 rounded-full"
+                  style={{
+                    background: "rgba(255,255,255,0.55)",
+                    backdropFilter: "blur(12px) saturate(180%)",
+                    WebkitBackdropFilter: "blur(12px) saturate(180%)",
+                    boxShadow:
+                      "inset 0 1px 0 rgba(255,255,255,0.85), inset 0 -1px 0 rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.10)",
+                    border: "0.5px solid rgba(255,255,255,0.6)",
+                  }}
+                />
+              )}
               <tab.icon
                 size={22}
                 strokeWidth={isActive ? 2.2 : 1.5}
-                className={
-                  isActive ? "text-foreground" : "text-muted-foreground/50"
-                }
+                className={`relative ${isActive ? "text-foreground" : "text-muted-foreground/50"}`}
               />
               <span
-                className={`text-[10px] font-semibold ${
+                className={`relative text-[10px] font-semibold ${
                   isActive ? "text-foreground" : "text-muted-foreground/50"
                 }`}
               >
