@@ -207,7 +207,7 @@ export function ManageCategories({ initialCategories }: ManageCategoriesProps) {
   }
 
   return (
-    <div className="bg-mesh min-h-dvh px-4 pt-14 pb-8">
+    <div className="bg-mesh min-h-dvh px-4 pt-4 pb-8">
       {/* Header */}
       <div className="mb-1 flex items-center gap-2">
         <Link

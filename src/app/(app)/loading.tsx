@@ -1,6 +1,6 @@
 export default function Loading() {
   return (
-    <div className="bg-mesh min-h-dvh px-4 pt-14 pb-8">
+    <div className="bg-mesh min-h-dvh px-4 pt-4 pb-8">
       <div className="skeleton mb-5 h-9 w-36" />
       <div className="skeleton mb-4 h-12 w-full rounded-2xl" />
       <div className="mb-4 flex gap-2">
