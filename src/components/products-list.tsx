@@ -90,6 +90,11 @@ export function ProductsList({ categories, products, subcategories }: ProductsLi
     return null;
   }, [view, subcategories]);
 
+  // Scroll to top when view changes — must be before any early returns
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [view]);
+
   if (!isReady) {
     return (
       <div className="bg-mesh min-h-dvh px-4 pt-4 pb-8">
@@ -103,11 +108,6 @@ export function ProductsList({ categories, products, subcategories }: ProductsLi
       </div>
     );
   }
-
-  // Scroll to top when view changes
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [view]);
 
   const goBack = () => {
     if (view.type === "subcategory") {
