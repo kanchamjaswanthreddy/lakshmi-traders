@@ -71,14 +71,15 @@ export function ProductsList({ categories, products, subcategories }: ProductsLi
   }, [view, subcategories]);
 
   const productsForView = useMemo(() => {
+    const sorted = (arr: typeof products) =>
+      [...arr].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0) || a.name.localeCompare(b.name));
     if (view.type === "category") {
-      // Products with no subcategory in this category
-      return products.filter(
+      return sorted(products.filter(
         (p) => p.category_id === view.categoryId && !p.subcategory_id
-      );
+      ));
     }
     if (view.type === "subcategory") {
-      return products.filter((p) => p.subcategory_id === view.subcategoryId);
+      return sorted(products.filter((p) => p.subcategory_id === view.subcategoryId));
     }
     return [];
   }, [view, products]);

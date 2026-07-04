@@ -16,6 +16,7 @@ export interface Product {
   master_price: number;
   wholesale_price: number | null;
   shop_price: number | null;
+  sort_order: number;
   created_at: string;
   updated_at: string;
   category?: Category;

@@ -9,7 +9,7 @@ export default async function ProductsPage() {
 
   const [categoriesResult, productsResult, subcategoriesResult] = await Promise.all([
     supabase.from("categories").select("*").order("name", { ascending: true }),
-    supabase.from("products").select("*, category:categories(*)").order("name", { ascending: true }),
+    supabase.from("products").select("*, category:categories(*)").order("sort_order", { ascending: true }).order("name", { ascending: true }),
     supabase.from("subcategories").select("*").order("name", { ascending: true }),
   ]);
 

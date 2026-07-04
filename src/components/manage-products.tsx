@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
   ArrowRightLeft,
   ChevronDown,
+  GripVertical,
   Package,
   Pencil,
   Plus,
@@ -82,9 +83,12 @@ function groupProducts(
     groups.get(catId)!.items.push(product);
   }
 
-  return Array.from(groups.values()).sort((a, b) =>
-    a.categoryName.localeCompare(b.categoryName)
-  );
+  return Array.from(groups.values())
+    .sort((a, b) => a.categoryName.localeCompare(b.categoryName))
+    .map((g) => ({
+      ...g,
+      items: [...g.items].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0) || a.name.localeCompare(b.name)),
+    }));
 }
 
 function formatPrice(value: number): string {
@@ -118,6 +122,11 @@ export function ManageProducts({
   const [editWholesale, setEditWholesale] = useState("");
   const [editRetail, setEditRetail] = useState("");
   const [saving, setSaving] = useState(false);
+
+  // Drag-to-reorder state
+  const [dragState, setDragState] = useState<{ id: string; catItems: Product[] } | null>(null);
+  const [dragOverId, setDragOverId] = useState<string | null>(null);
+  const itemEls = useRef<Map<string, HTMLDivElement>>(new Map());
 
   // Add form state
   const [newName, setNewName] = useState("");
@@ -181,6 +190,53 @@ export function ManageProducts({
 
     return { visibleGroups: result, hasMore: moreAvailable };
   }, [grouped, visibleCount]);
+
+  const onDragStart = useCallback((e: React.PointerEvent, product: Product, catItems: Product[]) => {
+    e.preventDefault();
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    setDragState({ id: product.id, catItems });
+    setDragOverId(null);
+  }, []);
+
+  const onDragMove = useCallback((e: React.PointerEvent) => {
+    if (!dragState) return;
+    const y = e.clientY;
+    for (const item of dragState.catItems) {
+      if (item.id === dragState.id) continue;
+      const el = itemEls.current.get(item.id);
+      if (!el) continue;
+      const rect = el.getBoundingClientRect();
+      if (y < rect.top + rect.height / 2) {
+        setDragOverId(item.id);
+        return;
+      }
+    }
+    setDragOverId(null);
+  }, [dragState]);
+
+  const onDragEnd = useCallback(async () => {
+    if (!dragState) return;
+    const { id, catItems } = dragState;
+    const oldIdx = catItems.findIndex((p) => p.id === id);
+    let newIdx = dragOverId === null ? catItems.length - 1 : catItems.findIndex((p) => p.id === dragOverId);
+    if (newIdx < 0) newIdx = catItems.length - 1;
+    if (oldIdx !== newIdx) {
+      const reordered = [...catItems];
+      const [moved] = reordered.splice(oldIdx, 1);
+      reordered.splice(newIdx, 0, moved);
+      setProducts((prev) =>
+        prev.map((p) => {
+          const idx = reordered.findIndex((r) => r.id === p.id);
+          return idx >= 0 ? { ...p, sort_order: idx } : p;
+        })
+      );
+      reordered.forEach((p, i) => {
+        supabase.from("products").update({ sort_order: i }).eq("id", p.id);
+      });
+    }
+    setDragState(null);
+    setDragOverId(null);
+  }, [dragState, dragOverId, supabase]);
 
   const openEditPrices = useCallback((product: Product) => {
     setEditTarget(product);
@@ -468,73 +524,85 @@ export function ManageProducts({
               </h2>
 
               <div className="ios-group card-glow overflow-hidden rounded-[20px]">
-                {group.items.map((product, itemIndex) => (
-                  <div
-                    key={product.id}
-                    className={`px-4 py-3 transition-transform duration-150 active:scale-[0.98] ${
-                      itemIndex < group.items.length - 1
-                        ? "border-b border-border/50"
-                        : ""
-                    }`}
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="min-w-0 flex-1">
-                        <p className="text-[15px] font-medium leading-snug text-foreground">
-                          {product.name}
-                        </p>
-                        {product.unit && (
-                          <p className="mt-0.5 text-[13px] text-muted-foreground">
-                            {product.unit}
+                {group.items.map((product, itemIndex) => {
+                  const isDragging = dragState?.id === product.id;
+                  const isDropTarget = dragOverId === product.id;
+                  return (
+                    <div
+                      key={product.id}
+                      ref={(el) => { if (el) itemEls.current.set(product.id, el); else itemEls.current.delete(product.id); }}
+                      className={`relative px-4 py-3 transition-opacity duration-150 ${isDragging ? "opacity-40" : ""} ${
+                        itemIndex < group.items.length - 1 ? "border-b border-border/50" : ""
+                      }`}
+                    >
+                      {/* Drop-here indicator */}
+                      {isDropTarget && (
+                        <div className="absolute inset-x-4 top-0 h-0.5 rounded-full bg-foreground/60" />
+                      )}
+
+                      <div className="flex items-center gap-2">
+                        {/* Drag handle */}
+                        <div
+                          className="touch-none flex h-8 w-6 shrink-0 cursor-grab items-center justify-center active:cursor-grabbing"
+                          onPointerDown={(e) => onDragStart(e, product, group.items)}
+                          onPointerMove={onDragMove}
+                          onPointerUp={onDragEnd}
+                          onPointerCancel={() => { setDragState(null); setDragOverId(null); }}
+                        >
+                          <GripVertical size={16} strokeWidth={1.5} className="text-muted-foreground/30" />
+                        </div>
+
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[15px] font-medium leading-snug text-foreground">
+                            {product.name}
                           </p>
-                        )}
-                      </div>
+                          {product.unit && (
+                            <p className="mt-0.5 text-[13px] text-muted-foreground">
+                              {product.unit}
+                            </p>
+                          )}
+                        </div>
 
-                      <div className="flex items-center gap-1.5">
-                        {/* Prices - tap to edit */}
-                        <button
-                          onClick={() => openEditPrices(product)}
-                          className="flex items-center gap-0.5 rounded-xl bg-secondary px-2 py-1 transition-colors active:scale-95"
-                        >
-                          <span className="price-mono text-[11px] text-muted-foreground/50">
-                            {"\u20B9"}{formatPrice(product.master_price)}
-                          </span>
-                          <span className="price-mono text-[12px] font-semibold text-foreground/70">
-                            {product.wholesale_price != null ? `\u20B9${formatPrice(product.wholesale_price)}` : "—"}
-                          </span>
-                          <span className="price-mono text-[13px] font-bold text-foreground">
-                            {product.shop_price != null ? `\u20B9${formatPrice(product.shop_price)}` : "—"}
-                          </span>
-                          <Pencil size={10} className="ml-0.5 text-muted-foreground/40" strokeWidth={2} />
-                        </button>
+                        <div className="flex items-center gap-1.5">
+                          {/* Prices - tap to edit */}
+                          <button
+                            onClick={() => openEditPrices(product)}
+                            className="flex items-center gap-0.5 rounded-xl bg-secondary px-2 py-1 transition-colors active:scale-95"
+                          >
+                            <span className="price-mono text-[11px] text-muted-foreground/50">
+                              {"\u20B9"}{formatPrice(product.master_price)}
+                            </span>
+                            <span className="price-mono text-[12px] font-semibold text-foreground/70">
+                              {product.wholesale_price != null ? `\u20B9${formatPrice(product.wholesale_price)}` : "—"}
+                            </span>
+                            <span className="price-mono text-[13px] font-bold text-foreground">
+                              {product.shop_price != null ? `\u20B9${formatPrice(product.shop_price)}` : "—"}
+                            </span>
+                            <Pencil size={10} className="ml-0.5 text-muted-foreground/40" strokeWidth={2} />
+                          </button>
 
-                        {/* Move button */}
-                        <button
-                          onClick={() => openMoveSheet(product)}
-                          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors active:scale-95 active:bg-foreground/10"
-                          aria-label={`Move ${product.name}`}
-                        >
-                          <ArrowRightLeft
-                            size={15}
-                            className="text-foreground/50"
-                            strokeWidth={1.8}
-                          />
-                        </button>
-                        {/* Delete button */}
-                        <button
-                          onClick={() => setDeleteTarget(product)}
-                          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors active:scale-95 active:bg-destructive/10"
-                          aria-label={`Delete ${product.name}`}
-                        >
-                          <Trash2
-                            size={16}
-                            className="text-destructive/70"
-                            strokeWidth={1.8}
-                          />
-                        </button>
+                          {/* Move button */}
+                          <button
+                            onClick={() => openMoveSheet(product)}
+                            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors active:scale-95 active:bg-foreground/10"
+                            aria-label={`Move ${product.name}`}
+                          >
+                            <ArrowRightLeft size={15} className="text-foreground/50" strokeWidth={1.8} />
+                          </button>
+
+                          {/* Delete button */}
+                          <button
+                            onClick={() => setDeleteTarget(product)}
+                            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors active:scale-95 active:bg-destructive/10"
+                            aria-label={`Delete ${product.name}`}
+                          >
+                            <Trash2 size={16} className="text-destructive/70" strokeWidth={1.8} />
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </section>
           ))}
