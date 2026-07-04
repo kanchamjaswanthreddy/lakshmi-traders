@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useRef } from "react";
 import { Package, Calculator, Camera, Settings } from "lucide-react";
 import { useAuth } from "@/components/auth-provider";
 
@@ -21,11 +22,43 @@ const TABS: Tab[] = [
 
 export function TabBar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { profile } = useAuth();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+  const lastHref = useRef<string | null>(null);
 
   const visibleTabs = TABS.filter(
     (tab) => !tab.adminOnly || profile?.role === "admin"
   );
+
+  const getTabAtX = (clientX: number): Tab | null => {
+    if (!containerRef.current) return null;
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = clientX - rect.left;
+    if (x < 0 || x > rect.width) return null;
+    const index = Math.floor((x / rect.width) * visibleTabs.length);
+    return visibleTabs[Math.max(0, Math.min(index, visibleTabs.length - 1))] ?? null;
+  };
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    isDragging.current = true;
+    lastHref.current = null;
+    containerRef.current?.setPointerCapture(e.pointerId);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDragging.current) return;
+    const tab = getTabAtX(e.clientX);
+    if (!tab || tab.href === lastHref.current) return;
+    lastHref.current = tab.href;
+    router.push(tab.href);
+  };
+
+  const handlePointerUp = () => {
+    isDragging.current = false;
+    lastHref.current = null;
+  };
 
   return (
     <nav
@@ -35,7 +68,8 @@ export function TabBar() {
       }}
     >
       <div
-        className="pointer-events-auto flex items-center gap-1 px-3 py-2 mx-4"
+        ref={containerRef}
+        className="pointer-events-auto flex items-center gap-1 px-3 py-2 mx-4 select-none"
         style={{
           background: "var(--surface-elevated)",
           backdropFilter: "blur(40px) saturate(200%)",
@@ -43,7 +77,12 @@ export function TabBar() {
           borderRadius: "9999px",
           border: "0.5px solid var(--border)",
           boxShadow: "0 4px 24px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06)",
+          touchAction: "none",
         }}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
       >
         {visibleTabs.map((tab) => {
           const isActive =
@@ -56,6 +95,7 @@ export function TabBar() {
               key={tab.href}
               href={tab.href}
               prefetch={true}
+              draggable={false}
               className="relative flex w-20 flex-col items-center gap-0.5 py-2 transition-transform duration-150 active:scale-90"
             >
               {isActive && (
