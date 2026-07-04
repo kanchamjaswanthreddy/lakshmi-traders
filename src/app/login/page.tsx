@@ -46,10 +46,8 @@ export default function LoginPage() {
           <div className="px-8 pt-10 pb-9">
             {/* Branding */}
             <div className="mb-10 text-center">
-              <div className="mx-auto mb-5 flex h-[72px] w-[72px] items-center justify-center rounded-[20px] bg-gradient-to-br from-[#1D1D1F] to-[#3A3A3C] shadow-lg">
-                <span className="text-[32px] font-bold leading-none text-white" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
-                  L
-                </span>
+              <div className="mx-auto mb-5 flex h-[72px] w-[72px] items-center justify-center">
+                <img src="/icons/logo.png" alt="Lakshmi Traders" className="h-full w-full object-contain drop-shadow-lg" />
               </div>
               <h1 className="large-title text-foreground">
                 Sri Sri Sri
