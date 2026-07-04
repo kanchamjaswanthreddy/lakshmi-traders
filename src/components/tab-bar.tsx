@@ -29,15 +29,22 @@ export function TabBar() {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-50 no-print border-t border-border/40"
+      className="no-print fixed bottom-0 inset-x-0 z-50 flex justify-center pointer-events-none"
       style={{
-        background: "var(--surface-elevated)",
-        backdropFilter: "blur(40px) saturate(200%)",
-        WebkitBackdropFilter: "blur(40px) saturate(200%)",
-        paddingBottom: "env(safe-area-inset-bottom, 0px)",
+        paddingBottom: "calc(env(safe-area-inset-bottom, 16px) + 10px)",
       }}
     >
-      <div className="flex items-center justify-around px-2 py-1.5">
+      <div
+        className="pointer-events-auto flex items-center gap-1 px-3 py-2 mx-4"
+        style={{
+          background: "var(--surface-elevated)",
+          backdropFilter: "blur(40px) saturate(200%)",
+          WebkitBackdropFilter: "blur(40px) saturate(200%)",
+          borderRadius: "9999px",
+          border: "0.5px solid var(--border)",
+          boxShadow: "0 4px 24px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06)",
+        }}
+      >
         {visibleTabs.map((tab) => {
           const isActive =
             tab.href === "/"
@@ -49,7 +56,7 @@ export function TabBar() {
               key={tab.href}
               href={tab.href}
               prefetch={true}
-              className="flex flex-1 flex-col items-center gap-0.5 py-1 transition-transform duration-100 active:scale-90"
+              className="flex flex-col items-center gap-0.5 px-5 py-1.5 transition-transform duration-100 active:scale-90"
             >
               <tab.icon
                 size={22}
