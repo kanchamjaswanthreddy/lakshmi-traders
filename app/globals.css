@@ -1,0 +1,194 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #ECECEE;
+  --surface: #FFFFFF;
+  --surface2: #F0F0F2;
+  --surface3: #E8E8EA;
+
+  --border: #E0E0E2;
+  --border-dark: #C8C8CA;
+
+  --text1: #1A1A1A;
+  --text2: #6E6E73;
+  --text3: #86868B;
+
+  --accent: #000000;
+
+  --green: #1C9E5A;
+  --green-bg: #F0FBF5;
+  --green-border: #C3E9D5;
+
+  --blue: #0066CC;
+  --blue-bg: #F0F6FF;
+  --blue-border: #B8D4F5;
+
+  --red: #E03020;
+  --red-bg: #FFF0F0;
+  --red-border: #F5B8B8;
+
+  /* iOS Liquid Glass shadows */
+  --glass-shadow:
+    0 0.5px 0 0 rgba(255, 255, 255, 0.9) inset,
+    0 -0.5px 0 0 rgba(0, 0, 0, 0.05) inset,
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 6px 16px rgba(0, 0, 0, 0.06),
+    0 16px 40px rgba(0, 0, 0, 0.06);
+  --glass-shadow-hover:
+    0 0.5px 0 0 rgba(255, 255, 255, 0.95) inset,
+    0 -0.5px 0 0 rgba(0, 0, 0, 0.06) inset,
+    0 2px 6px rgba(0, 0, 0, 0.05),
+    0 12px 28px rgba(0, 0, 0, 0.08),
+    0 28px 56px rgba(0, 0, 0, 0.07);
+  --glass-shadow-stat:
+    0 0.5px 0 0 rgba(255, 255, 255, 0.85) inset,
+    0 -0.5px 0 0 rgba(0, 0, 0, 0.04) inset,
+    0 1px 2px rgba(0, 0, 0, 0.03),
+    0 4px 12px rgba(0, 0, 0, 0.05),
+    0 12px 32px rgba(0, 0, 0, 0.05);
+  --glass-shadow-stat-hover:
+    0 0.5px 0 0 rgba(255, 255, 255, 0.95) inset,
+    0 -0.5px 0 0 rgba(0, 0, 0, 0.05) inset,
+    0 2px 4px rgba(0, 0, 0, 0.04),
+    0 8px 20px rgba(0, 0, 0, 0.07),
+    0 20px 48px rgba(0, 0, 0, 0.06);
+}
+
+@theme inline {
+  --color-background: var(--bg);
+  --color-foreground: var(--text1);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text1);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* ─── Focus Ring (keyboard-only) ─── */
+*:focus-visible {
+  outline: 2px solid #0066CC;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* ─── Reduced Motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   iOS Liquid Glass Card System
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* ─── Bento Card — Glass with hover ─── */
+.bento-card {
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 0.5px solid rgba(255, 255, 255, 0.6);
+  border-radius: 20px;
+  box-shadow: var(--glass-shadow);
+  transition: box-shadow 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+              border-color 0.3s ease-out,
+              transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+              background 0.3s ease-out;
+}
+
+.bento-card:hover {
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: var(--glass-shadow-hover);
+  border-color: rgba(255, 255, 255, 0.75);
+  transform: translateY(-4px);
+}
+
+/* ─── Bento Card Static — Glass (no hover lift) ─── */
+.bento-card-static {
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 0.5px solid rgba(255, 255, 255, 0.6);
+  border-radius: 20px;
+  box-shadow: var(--glass-shadow);
+}
+
+/* ─── Stat Card — Glass ─── */
+.stat-card {
+  background: rgba(255, 255, 255, 0.68);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(20px) saturate(160%);
+  border: 0.5px solid rgba(255, 255, 255, 0.55);
+  border-radius: 18px;
+  box-shadow: var(--glass-shadow-stat);
+  transition: box-shadow 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+              transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+              background 0.3s ease-out;
+}
+
+.stat-card:hover {
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: var(--glass-shadow-stat-hover);
+  transform: translateY(-3px);
+}
+
+/* ─── Skeleton Shimmer ─── */
+.skeleton {
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.3) 25%,
+    rgba(255,255,255,0.5) 50%,
+    rgba(255,255,255,0.3) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media print {
+  @page {
+    size: A5 portrait;
+    margin: 10mm;
+  }
+  .page-break {
+    page-break-after: always;
+  }
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white;
+  }
+  .bento-card, .bento-card-static, .stat-card {
+    background: white;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
