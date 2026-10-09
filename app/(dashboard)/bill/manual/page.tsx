@@ -36,10 +36,12 @@ export default function ManualBillPage() {
   const [customerType, setCustomerType] = useState<CustomerType>('customer');
 
   function handleProductSelect(product: Product) {
-    const rate = getProductPrice(product, customerType);
+    const inclPrice = getProductPrice(product, customerType);
+    const gst = product.gst_percent;
+    const baseRate = Math.round((inclPrice / (1 + gst / 100)) * 100) / 100;
     setItems((prev) => [
       ...prev,
-      { productId: product.id, productName: product.name, hsnCode: product.hsn_code, quantity: 1, unit: product.unit, rate, gstPercent: product.gst_percent, amount: rate },
+      { productId: product.id, productName: product.name, hsnCode: product.hsn_code, quantity: 1, unit: product.unit, rate: baseRate, gstPercent: gst, amount: baseRate },
     ]);
   }
 
