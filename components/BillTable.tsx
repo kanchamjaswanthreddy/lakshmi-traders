@@ -54,8 +54,8 @@ export default function BillTable({
             <th className="text-right px-3 pb-3 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#86868B] border-b border-[#E0E0E2] w-24">
               Rate
             </th>
-            <th className="text-right px-3 pb-3 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#86868B] border-b border-[#E0E0E2] w-24">
-              <span className="text-[#0066CC]">Incl. GST</span>
+            <th className="text-right px-3 pb-3 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#0066CC] border-b border-[#E0E0E2] w-24">
+              Incl. GST
             </th>
             <th className="text-center px-3 pb-3 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#86868B] border-b border-[#E0E0E2] w-16">
               GST%
@@ -139,7 +139,7 @@ export default function BillTable({
                     type="number"
                     min="0"
                     step="0.01"
-                    value={rateStrings[i] !== undefined ? rateStrings[i] : item.rate}
+                    value={rateStrings[i] !== undefined ? rateStrings[i] : (item.rate > 0 ? item.rate : '')}
                     onChange={(e) => {
                       const raw = e.target.value;
                       setRateStrings((prev) => ({ ...prev, [i]: raw }));
@@ -162,7 +162,8 @@ export default function BillTable({
                         return next;
                       });
                     }}
-                    className="bg-[#F0F0F2] border border-[#E0E0E2] rounded-lg px-2 py-1.5 text-[13px] font-semibold text-[#1A1A1A] text-right w-[80px] outline-none focus:border-[#1A1A1A] font-mono"
+                    placeholder="0"
+                    className="bg-[#F0F0F2] border border-[#E0E0E2] rounded-lg px-2 py-1.5 text-[13px] font-semibold text-[#1A1A1A] text-right w-[80px] outline-none focus:border-[#1A1A1A] font-mono placeholder:text-[#C0C0C2]"
                   />
                 </td>
                 <td className="px-3 py-3 text-right">
@@ -172,8 +173,8 @@ export default function BillTable({
                     step="0.01"
                     value={inclValues[i] !== undefined ? inclValues[i] : (item.rate > 0 ? computedIncl.toFixed(2) : '')}
                     onChange={(e) => handleInclGstChange(i, e.target.value, item.gstPercent)}
-                    placeholder="₹ incl."
-                    className="bg-[#F0F6FF] border border-[#D0E2F7] rounded-lg px-2 py-1.5 text-[13px] font-semibold text-[#0066CC] text-right w-[80px] outline-none focus:border-[#0066CC] font-mono"
+                    placeholder="0"
+                    className="bg-[#F0F6FF] border border-[#D0E2F7] rounded-lg px-2 py-1.5 text-[13px] font-semibold text-[#0066CC] text-right w-[80px] outline-none focus:border-[#0066CC] font-mono placeholder:text-[#B8D4F7]"
                   />
                 </td>
                 <td className="px-3 py-3 text-center">
