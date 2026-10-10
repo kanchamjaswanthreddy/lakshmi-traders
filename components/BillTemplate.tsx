@@ -115,7 +115,7 @@ export default function BillTemplate({ bill, copyType }: BillTemplateProps) {
             <span>{STORE.stateCode}</span>
           </div>
         </div>
-        <div style={{ width: '220px', padding: '8px 16px' }}>
+        <div style={{ width: '240px', padding: '8px 16px' }}>
           <div style={{ marginBottom: '4px' }}>
             <span style={{ fontSize: '10px', color: '#666' }}>
               INVOICE No.{' '}
@@ -145,7 +145,7 @@ export default function BillTemplate({ bill, copyType }: BillTemplateProps) {
                 : '—'}
             </span>
           </div>
-          <div>
+          <div style={{ marginBottom: '4px' }}>
             <span style={{ fontSize: '10px', color: '#666' }}>
               Vehicle No:{' '}
             </span>
@@ -155,7 +155,7 @@ export default function BillTemplate({ bill, copyType }: BillTemplateProps) {
             <span style={{ fontSize: '10px', color: '#666' }}>
               E-Way Bill:{' '}
             </span>
-            <span style={{ fontWeight: 'bold' }}>
+            <span style={{ fontWeight: 700, fontFamily: 'monospace', fontSize: '11px' }}>
               {bill.eway_bill_no || '....................................'}
             </span>
           </div>
