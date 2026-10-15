@@ -48,8 +48,10 @@ export default function ProductBrowser({ onSelect, customerType = 'customer' }: 
 
   const filtered = products.filter((p) => {
     if (subType !== 'all') {
-      if (subType === 'Common') {
+      if (category === 'swr' && subType === 'Common') {
         if (p.name.includes('Pushfit') || p.name.includes('Solfit')) return false;
+      } else if (category === 'sudhakar') {
+        if (p.sub_type !== subType) return false;
       } else if (!p.name.includes(subType)) return false;
     }
     if (size === 'all') return true;
@@ -62,7 +64,7 @@ export default function ProductBrowser({ onSelect, customerType = 'customer' }: 
       {/* Category Ribbon */}
       <div className="mb-3 overflow-x-auto">
         <GlassPillSelector
-          items={CATEGORIES.filter(c => ['cpvc', 'upvc', 'swr', 'other'].includes(c.id)).map(c => ({ id: c.id, label: c.label }))}
+          items={CATEGORIES.filter(c => ['cpvc', 'upvc', 'swr', 'sudhakar', 'other'].includes(c.id)).map(c => ({ id: c.id, label: c.label }))}
           value={category}
           onChange={(id) => { setCategory(id); setSubType('all'); setSize('all'); }}
           size="sm"
@@ -80,6 +82,22 @@ export default function ProductBrowser({ onSelect, customerType = 'customer' }: 
           />
         </div>
       )}
+
+      {/* Sub-Type Ribbon (Sudhakar — fitting categories) */}
+      {category === 'sudhakar' && (() => {
+        const sudhakarTypes = [...new Set(products.map(p => p.sub_type).filter(Boolean))] as string[];
+        if (sudhakarTypes.length === 0) return null;
+        return (
+          <div className="mb-2 overflow-x-auto">
+            <GlassPillSelector
+              items={[{ id: 'all', label: 'All' }, ...sudhakarTypes.sort().map(st => ({ id: st, label: st }))]}
+              value={subType}
+              onChange={setSubType}
+              size="sm"
+            />
+          </div>
+        );
+      })()}
 
       {/* Size Ribbon */}
       {sizes.length > 0 && (

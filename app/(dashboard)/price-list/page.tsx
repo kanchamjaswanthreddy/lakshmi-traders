@@ -49,7 +49,7 @@ export default function PriceListPage() {
 
   const filtered = products.filter((p) => {
     if (activeSubType !== 'all') {
-      if (activeSubType === 'Common') {
+      if (activeCategory === 'swr' && activeSubType === 'Common') {
         if (p.sub_type !== 'Common' && p.sub_type !== 'General') return false;
       } else if (p.sub_type !== activeSubType) return false;
     }
@@ -73,7 +73,7 @@ export default function PriceListPage() {
             Price List
           </h1>
           <p className="text-[13px] font-medium text-[#86868B] mt-1">
-            Ashirvad product prices — MRP, cost, shop & customer rates
+            Product prices — MRP, cost, shop & customer rates
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -88,7 +88,7 @@ export default function PriceListPage() {
         <GlassPillSelector
           items={[
             { id: 'all', label: 'All' },
-            ...CATEGORIES.filter(c => ['cpvc', 'upvc', 'swr'].includes(c.id)).map(c => ({ id: c.id, label: c.label })),
+            ...CATEGORIES.filter(c => ['cpvc', 'upvc', 'swr', 'sudhakar'].includes(c.id)).map(c => ({ id: c.id, label: c.label })),
           ]}
           value={activeCategory}
           onChange={(id) => { setActiveCategory(id); setActiveSubType('all'); setActiveSize('all'); setDiscountCat('all'); }}
@@ -111,6 +111,25 @@ export default function PriceListPage() {
           />
         </div>
       )}
+
+      {/* Sub-Type Filter (Sudhakar — fitting categories) */}
+      {activeCategory === 'sudhakar' && (() => {
+        const sudhakarSubTypes = [...new Set(products.map(p => p.sub_type).filter(Boolean))] as string[];
+        if (sudhakarSubTypes.length === 0) return null;
+        return (
+          <div className="mb-3 overflow-x-auto">
+            <GlassPillSelector
+              items={[
+                { id: 'all', label: 'All Items' },
+                ...sudhakarSubTypes.sort().map(st => ({ id: st, label: st })),
+              ]}
+              value={activeSubType}
+              onChange={setActiveSubType}
+              size="sm"
+            />
+          </div>
+        );
+      })()}
 
       {/* Size Ribbon */}
       {(() => {

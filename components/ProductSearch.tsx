@@ -78,7 +78,7 @@ export default function ProductSearch({ onSelect, customerType = 'customer' }: P
       </div>
 
       {showDropdown && results.length > 0 && (
-        <div className="absolute z-20 top-full mt-2 w-full bg-white border border-[rgba(0,0,0,0.07)] rounded-2xl shadow-lg max-h-[320px] overflow-y-auto">
+        <div className="absolute z-50 top-full mt-2 w-full bg-white border border-[rgba(0,0,0,0.07)] rounded-2xl shadow-xl max-h-[400px] overflow-y-auto">
           {results.map((p) => (
             <button
               key={p.id}
@@ -108,7 +108,7 @@ export default function ProductSearch({ onSelect, customerType = 'customer' }: P
       )}
 
       {showDropdown && query && results.length === 0 && !loading && (
-        <div className="absolute z-20 top-full mt-2 w-full bg-white border border-[rgba(0,0,0,0.07)] rounded-2xl shadow-lg p-5 text-center">
+        <div className="absolute z-50 top-full mt-2 w-full bg-white border border-[rgba(0,0,0,0.07)] rounded-2xl shadow-xl p-5 text-center">
           <p className="text-[13px] font-medium text-[#86868B]">
             No products found for &ldquo;{query}&rdquo;
           </p>

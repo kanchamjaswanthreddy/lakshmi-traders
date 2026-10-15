@@ -4,6 +4,7 @@ export const CATEGORIES: Category[] = [
   { id: 'cpvc', label: 'CPVC', hsn_default: '3917' },
   { id: 'upvc', label: 'UPVC', hsn_default: '3917' },
   { id: 'swr', label: 'SWR', hsn_default: '3917' },
+  { id: 'sudhakar', label: 'Sudhakar', hsn_default: '3917' },
   { id: 'agri', label: 'Agri Pipes', hsn_default: '3917' },
   { id: 'water_tanks', label: 'Water Tanks', hsn_default: '3925' },
   { id: 'motors', label: 'Motors / Pumps', hsn_default: '8413' },

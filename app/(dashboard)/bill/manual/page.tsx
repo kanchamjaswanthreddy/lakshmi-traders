@@ -216,7 +216,7 @@ export default function ManualBillPage() {
       </div>
 
       {/* ═══ PRODUCT PICKER (collapsible, full width) ═══ */}
-      <div className="bento-card-static mb-4 overflow-hidden">
+      <div className="bento-card-static mb-4 overflow-visible">
         <button
           onClick={() => setShowProducts(!showProducts)}
           className="flex items-center justify-between w-full p-4 pb-0 cursor-pointer"
